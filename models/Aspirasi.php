@@ -1,0 +1,130 @@
+<?php
+// Model: Aspirasi
+// Author: Antigravity
+
+class Aspirasi {
+    private $db;
+
+    public function __construct() {
+        global $db;
+        $this->db = $db;
+    }
+
+    // Create a new complaint
+    public function create($nisn, $id_kategori, $isi) {
+        try {
+            $this->db->beginTransaction();
+            
+            // Step 1: Insert into input_aspirasi
+            $stmt = $this->db->prepare("INSERT INTO input_aspirasi (nisn, id_kategori, isi_aspirasi) VALUES (?, ?, ?)");
+            $stmt->execute([$nisn, $id_kategori, $isi]);
+            $id_pelaporan = $this->db->lastInsertId();
+
+            if (!$id_pelaporan) {
+                throw new Exception("Failed to insert input_aspirasi");
+            }
+
+            // Step 2: Initialize aspirasi with status 'menunggu'
+            $stmt2 = $this->db->prepare("INSERT INTO aspirasi (id_pelaporan, status) VALUES (?, 'menunggu')");
+            $stmt2->execute([$id_pelaporan]);
+
+            $this->db->commit();
+            return true;
+        } catch (Exception $e) {
+            $this->db->rollBack();
+            return false;
+        }
+    }
+
+    // Get all complaints with filters (for admin)
+    public function getAll($filters = []) {
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.kelas
+                FROM aspirasi a
+                JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
+                JOIN kategori k ON ia.id_kategori = k.id_kategori
+                JOIN siswa s ON ia.nisn = s.nisn
+                WHERE 1=1";
+        
+        $params = [];
+
+        if (!empty($filters['status'])) {
+            $sql .= " AND a.status = ?";
+            $params[] = $filters['status'];
+        }
+
+        // Additional filters can be added here (date, category, etc.)
+        
+        $sql .= " ORDER BY ia.tgl_input DESC";
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
+    // Get complaints by specific student (history)
+    public function getByNisn($nisn) {
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.tgl_input, k.nama_kategori
+                FROM aspirasi a
+                JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
+                JOIN kategori k ON ia.id_kategori = k.id_kategori
+                WHERE ia.nisn = ?
+                ORDER BY ia.tgl_input DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$nisn]);
+        return $stmt->fetchAll();
+    }
+
+    // Get single complaint detail
+    public function getById($id_aspirasi) {
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.nisn, s.kelas
+                FROM aspirasi a
+                JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
+                JOIN kategori k ON ia.id_kategori = k.id_kategori
+                JOIN siswa s ON ia.nisn = s.nisn
+                WHERE a.id_aspirasi = ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$id_aspirasi]);
+        return $stmt->fetch();
+    }
+
+    // Update status and feedback
+    public function updateStatus($id_aspirasi, $status, $feedback) {
+        $stmt = $this->db->prepare("UPDATE aspirasi SET status = ?, feedback = ?, tgl_feedback = NOW() WHERE id_aspirasi = ?");
+        return $stmt->execute([$status, $feedback, $id_aspirasi]);
+    }
+
+    // Get statistics for specific student
+    public function getStatsByNisn($nisn) {
+        $stats = [];
+        // Total
+        $stmt = $this->db->prepare("SELECT COUNT(*) FROM input_aspirasi WHERE nisn = ?");
+        $stmt->execute([$nisn]);
+        $stats['total'] = $stmt->fetchColumn();
+
+        // Status specific (Validasi JOIN aspirasi)
+        $statuses = ['menunggu', 'proses', 'selesai'];
+        foreach ($statuses as $status) {
+            $sql = "SELECT COUNT(*) FROM aspirasi a 
+                    JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan 
+                    WHERE ia.nisn = ? AND a.status = ?";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$nisn, $status]);
+            $stats[$status] = $stmt->fetchColumn();
+        }
+
+        return $stats;
+    }
+    // Get recent activity for specific student
+    public function getRecentActivityByNisn($nisn, $limit = 5) {
+        $sql = "SELECT a.status, ia.isi_aspirasi, ia.tgl_input, k.nama_kategori 
+                FROM input_aspirasi ia
+                JOIN aspirasi a ON ia.id_pelaporan = a.id_pelaporan
+                JOIN kategori k ON ia.id_kategori = k.id_kategori
+                WHERE ia.nisn = ?
+                ORDER BY ia.tgl_input DESC 
+                LIMIT ?";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$nisn, $limit]);
+        return $stmt->fetchAll();
+    }
+}
