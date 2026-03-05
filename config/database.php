@@ -3,12 +3,17 @@
 // Author: Antigravity
 // Date: 2026-03-05 (Updated for Vercel & Aiven)
 
+// Helper function to get environment variables reliably
+function env($key, $default = null) {
+    return getenv($key) ?: ($_ENV[$key] ?? ($_SERVER[$key] ?? $default));
+}
+
 // Use environment variables if available (for Vercel/Aiven), otherwise use defaults
-define('DB_HOST', getenv('MYSQLHOST') ?: '127.0.0.1');
-define('DB_USER', getenv('MYSQLUSER') ?: 'root');
-define('DB_PASS', getenv('MYSQLPASSWORD') ?: '');
-define('DB_NAME', getenv('MYSQLDATABASE') ?: 'ukk_wiene2');
-define('DB_PORT', getenv('MYSQLPORT') ?: '3306');
+define('DB_HOST', env('MYSQLHOST', '127.0.0.1'));
+define('DB_USER', env('MYSQLUSER', 'root'));
+define('DB_PASS', env('MYSQLPASSWORD', ''));
+define('DB_NAME', env('MYSQLDATABASE', 'ukk_wiene2'));
+define('DB_PORT', env('MYSQLPORT', '3306'));
 
 try {
     $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
@@ -30,7 +35,7 @@ try {
     
 } catch (PDOException $e) {
     // Log error securely in production
-    die("Database Connection Error: " . $e->getMessage());
+    die("Database Connection Error (Host: " . DB_HOST . "): " . $e->getMessage());
 }
 
 // Global base URL helper
