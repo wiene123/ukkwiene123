@@ -1,67 +1,67 @@
 <?php
 // Auto Setup Script for UKK Wiene2
-// run this file: http://localhost/ukk_wiene2/setup.php
+// This script will detect your environment (Local or Cloud) and setup the database.
 
-echo "<h1>UKK Wiene2 Auto-Setup</h1>";
+require_once 'config/database.php';
 
-$host = 'localhost';
-$user = 'root';
-$pass = ''; // Default XAMPP password is empty
+echo "<style>body { font-family: sans-serif; line-height: 1.6; padding: 20px; color: #333; } .success { color: green; } .info { color: blue; } .error { color: red; }</style>";
+echo "<h1>🚀 UKK SIPESKU Auto-Setup</h1>";
+echo "<p>Environment: <b>" . (env('MYSQLHOST') ? 'Cloud (Vercel/Aiven)' : 'Localhost') . "</b></p>";
+echo "<p>Host: <b>" . DB_HOST . "</b></p>";
 
 try {
-    // 1. Connect to MySQL Server (no DB selected)
-    $pdo = new PDO("mysql:host=$host;charset=utf8mb4", $user, $pass);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    echo "<p style='color:green;'>1. Connected to MySQL Server.</p>";
+    // Note: $db is already instantiated in config/database.php
+    echo "<p class='success'>✅ 1. Connected to Database Server.</p>";
 
-    // 2. Check Database Existence
-    $db_name = 'ukk_wiene2';
-    $stmt = $pdo->query("SELECT COUNT(*) FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '$db_name'");
-    if (!$stmt->fetchColumn()) {
-        echo "<p>Database '$db_name' not found. Creating...</p>";
-        $pdo->exec("CREATE DATABASE `$db_name`");
-        echo "<p style='color:green;'>2. Database '$db_name' created.</p>";
-    } else {
-        echo "<p style='color:blue;'>2. Database '$db_name' already exists.</p>";
-    }
-
-    // 3. Select Database
-    $pdo->exec("USE `$db_name`");
-    
-    // 4. Import SQL if tables missing
-    $stmt = $pdo->query("SHOW TABLES LIKE 'admin'");
+    // 2. Import SQL if tables missing
+    $stmt = $db->query("SHOW TABLES LIKE 'admin'");
     if (!$stmt->fetchColumn()) {
         echo "<p>Tables missing. Importing structure...</p>";
         
         $sql_file = __DIR__ . '/config/database.sql';
         if (file_exists($sql_file)) {
             $sql = file_get_contents($sql_file);
-            // Split SQL file by semicolons mostly works for simple dumps
-            // But better to execute as whole block if possible or use multiple queries
-            $pdo->exec($sql);
-            echo "<p style='color:green;'>3. Database structure imported from 'config/database.sql'.</p>";
+            
+            // Execute the SQL dump
+            // Note: For managed DBs like Aiven, we omit CREATE DATABASE/USE commands
+            // we assume the DB is already selected in the DSN
+            $db->exec($sql);
+            echo "<p class='success'>✅ 2. Database structure imported from 'config/database.sql'.</p>";
         } else {
-             echo "<p style='color:red;'>ERROR: 'config/database.sql' file not found!</p>";
+             echo "<p class='error'>❌ ERROR: 'config/database.sql' file not found!</p>";
              exit;
         }
     } else {
-        echo "<p style='color:blue;'>3. Tables already exist (Skipping import).</p>";
+        echo "<p class='info'>ℹ️ 2. Tables already exist (Skipping import).</p>";
     }
 
-    // 5. Verify Admin Account
-    $stmt = $pdo->query("SELECT COUNT(*) FROM admin WHERE username='admin'");
+    // 3. Verify Admin Account
+    $stmt = $db->query("SELECT COUNT(*) FROM admin WHERE username='admin'");
     if (!$stmt->fetchColumn()) {
-        $pass = md5('user123');
-        $pdo->exec("INSERT INTO admin (username, password) VALUES ('admin', '$pass')");
-        echo "<p style='color:green;'>4. Default Admin account created (admin / user123).</p>";
+        $pass_hash = md5('user123');
+        $stmt = $db->prepare("INSERT INTO admin (username, password) VALUES ('admin', ?)");
+        $stmt->execute([$pass_hash]);
+        echo "<p class='success'>✅ 3. Default Admin account created (admin / user123).</p>";
     } else {
-        echo "<p style='color:blue;'>4. Admin account exists.</p>";
+        echo "<p class='info'>ℹ️ 3. Admin account already exists.</p>";
     }
 
-    echo "<h3>Setup Complete!</h3>";
-    echo "<p><a href='index.php'>Go to Landing Page</a></p>";
+    // 4. Verify Student Account (Dummy)
+    $stmt = $db->query("SELECT COUNT(*) FROM siswa");
+    if (!$stmt->fetchColumn()) {
+        $pass_hash = md5('user123');
+        $stmt = $db->prepare("INSERT INTO siswa (nisn, nama, kelas, password) VALUES (?, ?, ?, ?)");
+        $stmt->execute(['12345', 'Siswa Demo', 'XII RPL 1', $pass_hash]);
+        echo "<p class='success'>✅ 4. Demo Student account created (12345 / user123).</p>";
+    } else {
+        echo "<p class='info'>ℹ️ 4. Student accounts already exist.</p>";
+    }
+
+    echo "<h2>🏆 Setup Complete!</h2>";
+    echo "<p><a href='index.php'>Go to Login Page</a></p>";
 
 } catch (PDOException $e) {
-    echo "<h3 style='color:red;'>Setup Failed: " . $e->getMessage() . "</h3>";
-    echo "<p>Make sure XAMPP (Apache & MySQL) is running and password for 'root' is empty.</p>";
+    echo "<h3 class='error'>❌ Setup Failed: " . $e->getMessage() . "</h3>";
+    echo "<p>Check your Environment Variables in Vercel if this is a cloud deployment.</p>";
 }
+echo "<hr><p><small>Generated by Antigravity</small></p>";
