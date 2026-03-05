@@ -22,11 +22,22 @@ try {
         if (file_exists($sql_file)) {
             $sql = file_get_contents($sql_file);
             
-            // Execute the SQL dump
-            // Note: For managed DBs like Aiven, we omit CREATE DATABASE/USE commands
-            // we assume the DB is already selected in the DSN
-            $db->exec($sql);
-            echo "<p class='success'>✅ 2. Database structure imported from 'config/database.sql'.</p>";
+            // Clean up the SQL to avoid common errors on Aiven
+            // Remove START TRANSACTION and COMMIT if they cause issues, and split queries
+            $queries = explode(";", $sql);
+            foreach ($queries as $query) {
+                $query = trim($query);
+                if (empty($query)) continue;
+                try {
+                    $db->exec($query);
+                } catch (Exception $e) {
+                    // Ignore errors for some commands that might fail on Aiven
+                    if (strpos($query, 'SET time_zone') === false && strpos($query, 'START TRANSACTION') === false) {
+                        echo "<p class='error'>WARN: Query failed: " . substr($query, 0, 50) . "... Error: " . $e->getMessage() . "</p>";
+                    }
+                }
+            }
+            echo "<p class='success'>✅ 2. Database structure imported.</p>";
         } else {
              echo "<p class='error'>❌ ERROR: 'config/database.sql' file not found!</p>";
              exit;
@@ -35,29 +46,42 @@ try {
         echo "<p class='info'>ℹ️ 2. Tables already exist (Skipping import).</p>";
     }
 
-    // 3. Verify Admin Account
-    $stmt = $db->query("SELECT COUNT(*) FROM admin WHERE username='admin'");
-    if (!$stmt->fetchColumn()) {
-        $pass_hash = md5('user123');
-        $stmt = $db->prepare("INSERT INTO admin (username, password) VALUES ('admin', ?)");
-        $stmt->execute([$pass_hash]);
-        echo "<p class='success'>✅ 3. Default Admin account created (admin / user123).</p>";
-    } else {
-        echo "<p class='info'>ℹ️ 3. Admin account already exists.</p>";
+    // 3. Sync Admin Accounts (from Localhost)
+    $admins_to_sync = [
+        ['admincalista', '202cb962ac59075b964b07152d234b70'],
+        ['adminsopia', '202cb962ac59075b964b07152d234b70'],
+        ['adminwiene', '202cb962ac59075b964b07152d234b70'],
+        ['admin', '6ad14ba9986e3615423dfca256d04e3f'] // default ukk
+    ];
+
+    foreach ($admins_to_sync as $adm) {
+        $stmt = $db->prepare("SELECT COUNT(*) FROM admin WHERE username=?");
+        $stmt->execute([$adm[0]]);
+        if (!$stmt->fetchColumn()) {
+            $stmt = $db->prepare("INSERT INTO admin (username, password) VALUES (?, ?)");
+            $stmt->execute([$adm[0], $adm[1]]);
+            echo "<p class='success'>✅ Admin '{$adm[0]}' synced.</p>";
+        }
     }
 
-    // 4. Verify Student Account (Dummy)
-    $stmt = $db->query("SELECT COUNT(*) FROM siswa");
-    if (!$stmt->fetchColumn()) {
-        $pass_hash = md5('user123');
-        $stmt = $db->prepare("INSERT INTO siswa (nisn, nama, kelas, password) VALUES (?, ?, ?, ?)");
-        $stmt->execute(['12345', 'Siswa Demo', 'XII RPL 1', $pass_hash]);
-        echo "<p class='success'>✅ 4. Demo Student account created (12345 / user123).</p>";
-    } else {
-        echo "<p class='info'>ℹ️ 4. Student accounts already exist.</p>";
+    // 4. Sync Student Accounts (from Localhost)
+    $siswas_to_sync = [
+        ['12345', 'Budi Santoso', 'XII RPL 1', '202cb962ac59075b964b07152d234b70'],
+        ['123456', 'Yanti Jubaedah', 'XII RPL 2', '202cb962ac59075b964b07152d234b70'],
+        ['123457', 'Sadam Permana', 'X TKRO 1', '202cb962ac59075b964b07152d234b70']
+    ];
+
+    foreach ($siswas_to_sync as $s) {
+        $stmt = $db->prepare("SELECT COUNT(*) FROM siswa WHERE nisn=?");
+        $stmt->execute([$s[0]]);
+        if (!$stmt->fetchColumn()) {
+            $stmt = $db->prepare("INSERT INTO siswa (nisn, nama, kelas, password) VALUES (?, ?, ?, ?)");
+            $stmt->execute([$s[0], $s[1], $s[2], $s[3]]);
+            echo "<p class='success'>✅ Siswa '{$s[1]}' synced.</p>";
+        }
     }
 
-    echo "<h2>🏆 Setup Complete!</h2>";
+    echo "<h2>🏆 Setup & Sync Complete!</h2>";
     echo "<p><a href='index.php'>Go to Login Page</a></p>";
 
 } catch (PDOException $e) {

@@ -63,5 +63,14 @@ function base_url($path = '') {
 
 // Start session if not started
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    // For Vercel, sessions MUST be stored in /tmp
+    if (env('MYSQLHOST')) {
+        session_save_path('/tmp');
+    }
+    
+    session_start([
+        'cookie_httponly' => true,
+        'cookie_secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+        'cookie_samesite' => 'Lax',
+    ]);
 }
