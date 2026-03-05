@@ -7,19 +7,25 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-require_once 'config/database.php';
-require_once 'helpers/auth_helper.php';
-require_once 'helpers/role_helper.php';
+// Define Root Path
+define('ROOT_PATH', __DIR__ . DIRECTORY_SEPARATOR);
+
+// Add Root to Include Path so require 'views/...' always works
+set_include_path(get_include_path() . PATH_SEPARATOR . ROOT_PATH);
+
+require_once ROOT_PATH . 'config/database.php';
+require_once ROOT_PATH . 'helpers/auth_helper.php';
+require_once ROOT_PATH . 'helpers/role_helper.php';
 
 // Models
-require_once 'models/Admin.php';
-require_once 'models/Siswa.php';
-require_once 'models/Kategori.php';
-require_once 'models/Aspirasi.php';
+require_once ROOT_PATH . 'models/Admin.php';
+require_once ROOT_PATH . 'models/Siswa.php';
+require_once ROOT_PATH . 'models/Kategori.php';
+require_once ROOT_PATH . 'models/Aspirasi.php';
 
 // Controllers
-require_once 'controllers/AdminController.php';
-require_once 'controllers/SiswaController.php';
+require_once ROOT_PATH . 'controllers/AdminController.php';
+require_once ROOT_PATH . 'controllers/SiswaController.php';
 
 // Instantiate Models
 $adminModel = new Admin();
@@ -66,9 +72,9 @@ switch ($page) {
             }
 
             $error = "Username/NISN atau Password salah!";
-            require 'views/auth/login.php';
+            require ROOT_PATH . 'views/auth/login.php';
         } else {
-            require 'views/auth/login.php';
+            require ROOT_PATH . 'views/auth/login.php';
         }
         break;
 
