@@ -7,7 +7,7 @@
     <!-- Font: Nunito (Rounded & Cute) -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <!-- CSS -->
-    <link rel="stylesheet" href="<?= base_url('assets/css/style.css?v=1.7'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/style.css?v=2.0'); ?>">
     <!-- Icons (Feather Icons for lightweight) -->
     <script src="https://unpkg.com/feather-icons"></script>
 </head>

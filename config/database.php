@@ -40,8 +40,14 @@ try {
 
 // Global base URL helper
 function base_url($path = '') {
-    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
     $host = $_SERVER['HTTP_HOST'];
+    
+    // If we are on Vercel, always use root relative to host
+    if (strpos($host, 'vercel.app') !== false) {
+        return $protocol . "://" . $host . '/' . ltrim($path, '/');
+    }
+
     $script = dirname($_SERVER['SCRIPT_NAME']);
     // Remove backslashes on Windows
     $script = str_replace('\\', '/', $script);
