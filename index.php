@@ -79,7 +79,8 @@ switch ($page) {
         break;
 
     case 'logout':
-        session_start();
+        // Session is already started in database.php
+        $_SESSION = [];
         session_destroy();
         session_start();
         $_SESSION['flash'] = ['type' => 'success', 'message' => 'Logout Berhasil! Sampai Jumpa.'];
