@@ -1,26 +1,35 @@
 <?php
 // Config Database Connection
 // Author: Antigravity
-// Date: 2026-02-13
+// Date: 2026-03-05 (Updated for Vercel & Aiven)
 
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'ukk_wiene2');
+// Use environment variables if available (for Vercel/Aiven), otherwise use defaults
+define('DB_HOST', getenv('MYSQLHOST') ?: 'localhost');
+define('DB_USER', getenv('MYSQLUSER') ?: 'root');
+define('DB_PASS', getenv('MYSQLPASSWORD') ?: '');
+define('DB_NAME', getenv('MYSQLDATABASE') ?: 'ukk_wiene2');
+define('DB_PORT', getenv('MYSQLPORT') ?: '3306');
 
 try {
-    $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+    $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
     ];
+
+    // Handle SSL for Aiven or other managed DBs
+    if (getenv('MYSQL_ATTR_SSL_CA')) {
+        $options[PDO::MYSQL_ATTR_SSL_CA] = getenv('MYSQL_ATTR_SSL_CA');
+        // If providing the content of CA instead of file path, 
+        // they might need to save it to a temp file first.
+    }
     
     // Create connection
     $db = new PDO($dsn, DB_USER, DB_PASS, $options);
     
 } catch (PDOException $e) {
-    // Log error securely in production, simpler for UKK dev
+    // Log error securely in production
     die("Database Connection Error: " . $e->getMessage());
 }
 
