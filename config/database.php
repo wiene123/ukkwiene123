@@ -45,6 +45,12 @@ function base_url($path = '') {
     $script = dirname($_SERVER['SCRIPT_NAME']);
     // Remove backslashes on Windows
     $script = str_replace('\\', '/', $script);
+    
+    // For Vercel, if we are in /api/, the root is one level up
+    if ($script === '/api' || $script === '/api/') {
+        $script = '';
+    }
+    
     // Ensure trailing slash
     $base = rtrim($protocol . "://" . $host . $script, '/');
     return $base . '/' . ltrim($path, '/');
