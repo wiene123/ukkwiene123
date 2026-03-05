@@ -40,22 +40,21 @@ try {
 
 // Global base URL helper
 function base_url($path = '') {
-    $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? "https" : "http";
+    // Detect HTTPS correctly on Vercel/Proxy servers
+    $is_https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || 
+                (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+    
+    $protocol = $is_https ? "https" : "http";
     $host = $_SERVER['HTTP_HOST'];
     
-    // If we are on Vercel, always use root relative to host
+    // For Vercel, use root-relative paths to avoid Mixed Content / Protocol issues
     if (strpos($host, 'vercel.app') !== false) {
-        return $protocol . "://" . $host . '/' . ltrim($path, '/');
+        return '/' . ltrim($path, '/');
     }
 
     $script = dirname($_SERVER['SCRIPT_NAME']);
     // Remove backslashes on Windows
     $script = str_replace('\\', '/', $script);
-    
-    // For Vercel, if we are in /api/, the root is one level up
-    if ($script === '/api' || $script === '/api/') {
-        $script = '';
-    }
     
     // Ensure trailing slash
     $base = rtrim($protocol . "://" . $host . $script, '/');
