@@ -2,12 +2,19 @@
   "functions": {
     "api/index.php": {
       "runtime": "vercel-php@0.7.2"
+    },
+    "setup.php": {
+      "runtime": "vercel-php@0.7.2"
     }
   },
   "routes": [
     {
       "src": "/assets/(.*)",
       "dest": "/assets/$1"
+    },
+    {
+      "src": "/setup.php",
+      "dest": "/setup.php"
     },
     {
       "src": "/",
