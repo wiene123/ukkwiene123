@@ -5,7 +5,8 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
 ?>
 
 <div class="wrapper">
-<aside class="sidebar" id="sidebar">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="sidebar-brand">
             <i data-feather="monitor"></i>

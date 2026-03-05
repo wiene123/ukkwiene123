@@ -3,7 +3,7 @@
 <div class="card">
     <div class="card-header">
         <h4 class="card-title">Daftar Aspirasi Masuk</h4>
-        <div class="card-actions">
+        <div class="card-actions" style="display: flex; flex-wrap: wrap; gap: 5px;">
             <a href="?page=admin_aspirasi&status=menunggu" class="btn btn-sm" style="background: #FFFde7; color: #FBC02D; border: 1px solid #FBC02D;">Menunggu</a>
             <a href="?page=admin_aspirasi&status=proses" class="btn btn-sm" style="background: #E3F2FD; color: #1976D2; border: 1px solid #1976D2;">Proses</a>
             <a href="?page=admin_aspirasi&status=selesai" class="btn btn-sm" style="background: #E8F5E9; color: #388E3C; border: 1px solid #388E3C;">Selesai</a>

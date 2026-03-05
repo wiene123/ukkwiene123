@@ -34,7 +34,7 @@
                 <textarea name="isi_aspirasi" class="form-control" rows="8" placeholder="Tuliskan keluhan atau saran Anda di sini secara detail..." required style="width: 100%; padding: 15px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit;"></textarea>
             </div>
 
-            <div style="display: flex; gap: 10px;">
+            <div class="stack-mobile" style="display: flex; gap: 10px;">
                 <button type="submit" class="btn btn-primary" style="padding: 12px 25px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
                     <i data-feather="send" style="width:18px;"></i> Kirim Laporan
                 </button>

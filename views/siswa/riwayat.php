@@ -13,7 +13,7 @@
         <?php if(isset($history)): ?>
             <?php foreach($history as $h): ?>
                 <div class="card" style="box-shadow: none; border: 1px solid #eee; margin-bottom: 15px;">
-                    <div class="card-header" style="border-bottom: none; display: flex; justify-content: space-between; align-items: start;">
+                    <div class="card-header stack-mobile" style="border-bottom: none; display: flex; justify-content: space-between; align-items: start;">
                         <div>
                             <span class="badge badge-secondary" style="margin-bottom: 5px;"><?= h($h['nama_kategori']) ?></span>
                             <h5 style="margin: 0; font-size: 1rem; color: #333; line-height: 1.4;">

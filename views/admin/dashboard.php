@@ -5,7 +5,7 @@
 </div>
 
 <!-- Stats -->
-<div class="row" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 30px;">
+<div class="row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px;">
     <!-- Card Total -->
     <div class="card" style="display: flex; gap: 20px; align-items: center; border-left: 5px solid #6c757d;">
         <div style="background: #e9ecef; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #6c757d;">
@@ -61,7 +61,7 @@
         <?php if(!empty($recent_activity)): ?>
             <div style="display: flex; flex-direction: column;">
                 <?php foreach($recent_activity as $act): ?>
-                <div style="padding: 15px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <div class="stack-mobile" style="padding: 15px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; gap: 15px; align-items: center;">
                         <div style="background: #f1f5f9; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b;">
                             <i data-feather="user" style="width: 20px;"></i>

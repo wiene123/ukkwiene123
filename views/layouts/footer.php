@@ -14,11 +14,27 @@
     feather.replace();
 </script>
 
+
 <script>
-    // Simple Sidebar Toggle
-    document.querySelector('.toggle-sidebar').addEventListener('click', function() {
-        document.querySelector('.sidebar').classList.toggle('active');
-    });
+    // Improved Sidebar Toggle
+    const sidebar = document.querySelector('.sidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    const toggleBtn = document.querySelector('.toggle-sidebar');
+
+    function toggleSidebar() {
+        if (sidebar && backdrop) {
+            sidebar.classList.toggle('active');
+            backdrop.classList.toggle('active');
+        }
+    }
+
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+    }
+
+    if (backdrop) {
+        backdrop.addEventListener('click', toggleSidebar);
+    }
 </script>
 
 <!-- Flash Message Handler -->

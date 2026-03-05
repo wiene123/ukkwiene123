@@ -625,27 +625,23 @@ textarea.form-control {
     animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Responsive */
+/* Responsive Adjustments */
 @media (max-width: 991px) {
-
-    /* Tablet and below */
     .sidebar {
-        width: 0;
-        overflow: hidden;
-        padding: 0;
+        transform: translateX(-100%);
+        width: 260px;
+        /* Standard sidebar width */
+        z-index: 1001;
     }
 
     .sidebar.active {
-        width: var(--sidebar-width);
-        padding: 0;
+        transform: translateX(0);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.1);
     }
 
     .main-content {
         margin-left: 0;
-    }
-
-    .toggle-sidebar {
-        display: block;
+        width: 100%;
     }
 
     .topbar {
@@ -654,5 +650,114 @@ textarea.form-control {
 
     .content {
         padding: 20px;
+    }
+
+    /* Sidebar Overlay Backdrop */
+    .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .sidebar-backdrop.active {
+        display: block;
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .user-info {
+        padding: 8px 15px;
+    }
+
+    .user-role {
+        display: none;
+        /* Hide role on small screens to save space */
+    }
+
+    .card {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .topbar {
+        height: 70px;
+    }
+
+    .sidebar-brand span {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .user-info {
+        gap: 8px;
+    }
+
+    .user-name {
+        font-size: 0.85rem;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .btn {
+        width: 100%;
+        /* Make buttons full width on small mobiles */
+        margin-bottom: 10px;
+    }
+
+    .btn-sm {
+        width: auto;
+    }
+
+    /* Stack form groups on mobile */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    /* Improve table viewing on mobile */
+    .table-responsive {
+        border: 0;
+    }
+
+    .table td {
+        padding: 15px 10px;
+        font-size: 0.9rem;
+    }
+
+    /* Utility to stack flex items */
+    .stack-mobile {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 15px !important;
+    }
+
+    .stack-mobile>div {
+        text-align: left !important;
+        width: 100%;
+    }
+
+    .hide-mobile {
+        display: none !important;
     }
 }

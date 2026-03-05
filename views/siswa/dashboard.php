@@ -62,7 +62,7 @@
         <?php if(!empty($recent_activity)): ?>
             <div style="display: flex; flex-direction: column;">
                 <?php foreach($recent_activity as $act): ?>
-                <div style="padding: 15px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+                <div class="stack-mobile" style="padding: 15px 20px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
                     <div style="display: flex; gap: 15px; align-items: center;">
                         <div style="background: #f1f5f9; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #64748b;">
                             <i data-feather="message-circle" style="width: 20px;"></i>
