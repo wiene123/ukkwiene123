@@ -243,10 +243,13 @@ switch ($page) {
             $recent = $aspirasiModel->getByNisn($_SESSION['nisn']);
             foreach($recent as $r) {
                 if ($r['status'] !== 'menunggu' && $r['tgl_feedback']) {
+                    $msg = 'Laporan kategori ' . $r['nama_kategori'] . ' telah diupdate menjadi ' . strtoupper($r['status']);
+                    $full = $msg . ".\n\nTanggapan/Feedback Admin:\n" . ($r['feedback'] ?? 'Tidak ada pesan feedback.');
                     $notifs[] = [
                         'type' => $r['is_urgent'] ? 'urgent' : 'normal',
                         'title' => ($r['is_urgent'] ? '🚨 ' : '') . 'Tanggapan Baru',
-                        'message' => 'Laporan kategori ' . $r['nama_kategori'] . ' telah diupdate menjadi ' . strtoupper($r['status']),
+                        'message' => $msg,
+                        'full_message' => $full,
                         'time' => time_ago($r['tgl_feedback'])
                     ];
                 }
@@ -256,10 +259,13 @@ switch ($page) {
             $filters = ['status' => 'menunggu', 'urgent' => 1];
             $urgent_waiting = $aspirasiModel->getAll($filters);
             foreach($urgent_waiting as $u) {
+                $msg = $u['nama_siswa'] . ' mengirim laporan urgent baru.';
+                $full = $msg . "\n\nIsi Laporan:\n" . $u['isi_aspirasi'];
                 $notifs[] = [
                     'type' => 'urgent',
                     'title' => '🚨 Laporan Urgent!',
-                    'message' => $u['nama_siswa'] . ' mengirim laporan urgent baru.',
+                    'message' => $msg,
+                    'full_message' => $full,
                     'time' => time_ago($u['tgl_input'])
                 ];
             }
