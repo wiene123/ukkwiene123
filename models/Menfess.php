@@ -12,8 +12,13 @@ class Menfess {
 
     // Create new menfess
     public function create($nisn, $isi, $warna = '#ffffff') {
-        $stmt = $this->db->prepare("INSERT INTO menfess (nisn, isi, warna, status) VALUES (?, ?, ?, 'pending')");
-        return $stmt->execute([$nisn, $isi, $warna]);
+        try {
+            $stmt = $this->db->prepare("INSERT INTO menfess (nisn, isi, warna, status) VALUES (?, ?, ?, 'pending')");
+            return $stmt->execute([$nisn, $isi, $warna]);
+        } catch (PDOException $e) {
+            $_SESSION['db_error'] = $e->getMessage();
+            return false;
+        }
     }
 
     // Get all approved menfess with like counts

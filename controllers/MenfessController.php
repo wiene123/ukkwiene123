@@ -24,7 +24,9 @@ class MenfessController {
                 if ($menfessModel->create($nisn, $isi, $warna)) {
                     $_SESSION['flash'] = ['type' => 'success', 'message' => 'Curhat berhasil dikirim! Menunggu persetujuan admin.'];
                 } else {
-                    $_SESSION['flash'] = ['type' => 'error', 'message' => 'Gagal mengirim curhat.'];
+                    $err = $_SESSION['db_error'] ?? 'Gagal menyimpan ke database.';
+                    $_SESSION['flash'] = ['type' => 'error', 'message' => 'Gagal mengirim curhat: ' . $err];
+                    unset($_SESSION['db_error']);
                 }
             }
             header('Location: ' . base_url('index.php?page=menfess'));
