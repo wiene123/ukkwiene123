@@ -227,19 +227,22 @@ switch ($page) {
     case 'api_notif':
         check_login();
         $notifs = [];
-        // 1. Get Announcements
-        $latest_p = $pengumumanModel->getLatest(3);
-        foreach($latest_p as $p) {
-            $notifs[] = [
-                'type' => 'pengumuman',
-                'title' => '📢 Pengumuman: ' . $p['judul'],
-                'message' => (strlen($p['isi']) > 100) ? substr($p['isi'], 0, 100) . '...' : $p['isi'],
-                'full_message' => $p['isi'],
-                'time' => time_ago($p['tgl_input'])
-            ];
-        }
-        // 2. Get Recent Responses for this student (if role is siswa)
+        
+        // 1. Logic for Siswa (Announcements + Responses)
         if ($_SESSION['role'] === 'siswa') {
+            // Get Announcements
+            $latest_p = $pengumumanModel->getLatest(3);
+            foreach($latest_p as $p) {
+                $notifs[] = [
+                    'type' => 'pengumuman',
+                    'title' => '📢 Pengumuman: ' . $p['judul'],
+                    'message' => (strlen($p['isi']) > 100) ? substr($p['isi'], 0, 100) . '...' : $p['isi'],
+                    'full_message' => $p['isi'],
+                    'time' => time_ago($p['tgl_input'])
+                ];
+            }
+
+            // Get Recent Responses for this student
             $recent = $aspirasiModel->getByNisn($_SESSION['nisn']);
             foreach($recent as $r) {
                 if ($r['status'] !== 'menunggu' && $r['tgl_feedback']) {
