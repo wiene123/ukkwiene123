@@ -134,10 +134,11 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
                     badge.style.display = 'flex';
                     list.innerHTML = '';
                     data.forEach(n => {
-                        const escapedMsg = n.full_message ? n.full_message.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
+                        const escapedMsg = n.full_message ? n.full_message.replace(/['"`]/g, "\\$&").replace(/\n/g, "\\n").replace(/\r/g, "\\r") : '';
+                        const escapedTitle = n.title.replace(/['"`]/g, "\\$&");
                         list.innerHTML += `
                             <div style="padding: 15px 20px; border-bottom: 1px solid #f8f8f8; cursor: pointer; transition: 0.2s;" 
-                                 onclick="showNotifDetail('${n.title}', '${escapedMsg}')"
+                                 onclick="showNotifDetail('${escapedTitle}', '${escapedMsg}')"
                                  onmouseover="this.style.background='#fcfcff'" 
                                  onmouseout="this.style.background='transparent'">
                                 <div style="display: flex; gap: 12px;">
