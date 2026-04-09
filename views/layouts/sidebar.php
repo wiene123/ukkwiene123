@@ -130,11 +130,15 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
                     badge.style.display = 'flex';
                     list.innerHTML = '';
                     data.forEach(n => {
+                        const escapedMsg = n.full_message ? n.full_message.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
                         list.innerHTML += `
-                            <div style="padding: 15px 20px; border-bottom: 1px solid #f8f8f8; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#fcfcff'" onmouseout="this.style.background='transparent'">
+                            <div style="padding: 15px 20px; border-bottom: 1px solid #f8f8f8; cursor: pointer; transition: 0.2s;" 
+                                 onclick="showNotifDetail('${n.title}', '${escapedMsg}')"
+                                 onmouseover="this.style.background='#fcfcff'" 
+                                 onmouseout="this.style.background='transparent'">
                                 <div style="display: flex; gap: 12px;">
                                     <div style="background: ${n.type === 'urgent' ? 'var(--danger)' : n.type === 'pengumuman' ? 'var(--primary)' : '#e0e0e0'}; width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0;"></div>
-                                    <div>
+                                    <div style="flex: 1;">
                                         <p style="margin: 0; font-size: 0.85rem; font-weight: 700; color: #333;">${n.title}</p>
                                         <p style="margin: 4px 0; font-size: 0.8rem; color: #777; line-height: 1.4;">${n.message}</p>
                                         <span style="font-size: 0.7rem; color: #bbb;">${n.time}</span>
@@ -147,8 +151,33 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
             } catch (err) {}
         }
         
+        window.showNotifDetail = function(title, msg) {
+            document.getElementById('modal-notif-title').innerText = title;
+            document.getElementById('modal-notif-body').innerText = msg;
+            document.getElementById('modal-notif').style.display = 'flex';
+        }
+
+        window.closeNotifDetail = function() {
+            document.getElementById('modal-notif').style.display = 'none';
+        }
+        
         // Initial fetch
         fetchNotifs();
     });
     </script>
+    
+    <!-- Notif Detail Modal -->
+    <div id="modal-notif" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 2000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+        <div class="card" style="max-width: 500px; width: 90%; animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);">
+            <div class="card-header" style="border-bottom: 1px solid #eee; padding-bottom: 15px;">
+                <h4 id="modal-notif-title" class="card-title" style="font-size: 1.1rem; color: var(--primary);">Detail Notifikasi</h4>
+            </div>
+            <div style="padding: 20px 0;">
+                <p id="modal-notif-body" style="line-height: 1.6; color: #555; white-space: pre-wrap;"></p>
+            </div>
+            <div style="text-align: right; border-top: 1px solid #eee; padding-top: 15px;">
+                <button onclick="closeNotifDetail()" class="btn btn-primary" style="padding: 8px 30px;">Tutup</button>
+            </div>
+        </div>
+    </div>
     <div class="content">

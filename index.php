@@ -233,7 +233,8 @@ switch ($page) {
             $notifs[] = [
                 'type' => 'pengumuman',
                 'title' => '📢 Pengumuman: ' . $p['judul'],
-                'message' => substr($p['isi'], 0, 50) . '...',
+                'message' => (strlen($p['isi']) > 100) ? substr($p['isi'], 0, 100) . '...' : $p['isi'],
+                'full_message' => $p['isi'],
                 'time' => time_ago($p['tgl_input'])
             ];
         }
