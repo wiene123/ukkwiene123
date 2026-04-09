@@ -7,11 +7,8 @@ header("Content-Disposition: attachment; filename=\"$filename\"");
 
 $output = fopen("php://output", "w");
 
-// --- Header Summary Section ---
-fputcsv($output, ['SMK TERPADU BINA INSAN']);
-fputcsv($output, ['LAPORAN REKAPITULASI ASPIRASI']);
-fputcsv($output, ['Dicetak Tanggal:', date('d/m/Y H:i')]);
-fputcsv($output, []); // Spacer row
+// Add UTF-8 BOM for Excel compatibility
+fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
 // Statistics Recap
 $total = count($data);
@@ -22,27 +19,28 @@ foreach($data as $r) {
     if($r['status'] == 'selesai') $selesai++;
 }
 
-fputcsv($output, ['RINGKASAN DATA']);
-fputcsv($output, ['Total Laporan', $total]);
-fputcsv($output, ['Laporan Urgent', $urgent]);
-fputcsv($output, ['Laporan Selesai', $selesai]);
-fputcsv($output, []); // Spacer row
+// --- Header Summary Section (Ensuring consistent 10 columns) ---
+fputcsv($output, ['SMK TERPADU BINA INSAN', '', '', '', '', '', '', '', '', '']);
+fputcsv($output, ['LAPORAN REKAPITULASI ASPIRASI', '', '', '', '', '', '', '', '', '']);
+fputcsv($output, ['Dicetak Tanggal:', date('Y-m-d H:i'), '', '', '', '', '', '', '', '']);
+fputcsv($output, ['Status:', 'Total: '.$total, 'Urgent: '.$urgent, 'Selesai: '.$selesai, '', '', '', '', '', '']);
+fputcsv($output, ['', '', '', '', '', '', '', '', '', '']); // Spacer row
 
 // --- Detailed Data Table ---
-fputcsv($output, ['No', 'Tanggal', 'Nama Pelapor', 'Kelas', 'Kategori', 'Isi Laporan', 'Urgent', 'Status', 'Feedback', 'Tgl Ditanggapi']);
+fputcsv($output, ['No', 'Tanggal Laporan', 'Nama Pelapor', 'Kelas', 'Kategori', 'Isi Laporan', 'Urgent', 'Status', 'Kelompok Feedback', 'Tanggal Ditanggapi']);
 
 foreach ($data as $index => $row) {
     fputcsv($output, [
         $index + 1,
-        date('d/m/Y H:i', strtotime($row['tgl_input'])),
+        date('Y-m-d H:i', strtotime($row['tgl_input'])),
         $row['nama_siswa'],
         $row['kelas'],
         $row['nama_kategori'],
-        str_replace(["\r", "\n"], " ", $row['isi_aspirasi']),
+        str_replace(["\r", "\n", ","], " ", $row['isi_aspirasi']),
         $row['is_urgent'] ? 'YA' : 'TIDAK',
         strtoupper($row['status']),
-        str_replace(["\r", "\n"], " ", $row['feedback'] ?? '-'),
-        $row['tgl_feedback'] ? date('d/m/Y H:i', strtotime($row['tgl_feedback'])) : '-'
+        str_replace(["\r", "\n", ","], " ", $row['feedback'] ?? '-'),
+        $row['tgl_feedback'] ? date('Y-m-d H:i', strtotime($row['tgl_feedback'])) : '-'
     ]);
 }
 
