@@ -258,18 +258,65 @@ switch ($page) {
                 }
             }
         } else {
-            // For admin, show urgent reports that are still waiting
-            $filters = ['status' => 'menunggu', 'urgent' => 1];
-            $urgent_waiting = $aspirasiModel->getAll($filters);
+            // ADMIN LOGIC (5 Points)
+            
+            // 1. 🚨 Laporan Urgent Baru
+            $urgent_waiting = $aspirasiModel->getAll(['status' => 'menunggu', 'urgent' => 1]);
             foreach($urgent_waiting as $u) {
-                $msg = $u['nama_siswa'] . ' mengirim laporan urgent baru.';
-                $full = $msg . "\n\nIsi Laporan:\n" . $u['isi_aspirasi'];
                 $notifs[] = [
                     'type' => 'urgent',
                     'title' => '🚨 Laporan Urgent!',
-                    'message' => $msg,
-                    'full_message' => $full,
+                    'message' => $u['nama_siswa'] . ' mengirim laporan urgent.',
+                    'full_message' => "Laporan Urgent dari " . $u['nama_siswa'] . ".\n\nIsi: " . $u['isi_aspirasi'],
                     'time' => time_ago($u['tgl_input'])
+                ];
+            }
+
+            // 2. ⏰ Laporan Belum Ditanggapi > 24 Jam
+            $delayed = $aspirasiModel->getDelayedReports(3);
+            foreach($delayed as $d) {
+                $notifs[] = [
+                    'type' => 'normal',
+                    'title' => '⏰ Belum Ditanggapi > 24 Jam',
+                    'message' => 'Laporan ' . $d['nama_siswa'] . ' ('. $d['nama_kategori'] .') belum diproses.',
+                    'full_message' => "Peringatan: Laporan dari " . $d['nama_siswa'] . " sudah menunggu lebih dari 24 jam.\n\nKategori: " . $d['nama_kategori'],
+                    'time' => time_ago($d['tgl_input'])
+                ];
+            }
+
+            // 3. 📊 Rekap Harian
+            $daily_count = $aspirasiModel->getDailyCount();
+            if ($daily_count > 0) {
+                $notifs[] = [
+                    'type' => 'pengumuman',
+                    'title' => '📊 Rekap Laporan Hari Ini',
+                    'message' => "Ada $daily_count laporan baru yang masuk hari ini.",
+                    'full_message' => "Statistik Hari Ini: Total $daily_count laporan baru telah dikirim oleh siswa.",
+                    'time' => 'Hari ini'
+                ];
+            }
+
+            // 4. 👨‍💻 Aktivitas Petugas Lain (Recent Responses)
+            $recent_act = $aspirasiModel->getRecentAdminActivity(2);
+            foreach($recent_act as $ra) {
+                $notifs[] = [
+                    'type' => 'normal',
+                    'title' => '👨‍💻 Update Aktivitas Petugas',
+                    'message' => 'Laporan kategori ' . $ra['nama_kategori'] . ' telah ditanggapi.',
+                    'full_message' => "Sistem mencatat tanggapan baru pada laporan kategori " . $ra['nama_kategori'] . ".\n\nStatus: " . strtoupper($ra['status']),
+                    'time' => time_ago($ra['tgl_feedback'])
+                ];
+            }
+
+            // 5. 🔒 Notifikasi Keamanan (Registrasi Siswa Baru)
+            $new_users = $siswaModel->getNewRegistrations(2);
+            foreach($new_users as $nu) {
+                $notifs[] = [
+                    'type' => 'normal',
+                    'title' => '🔒 Registrasi Siswa Baru',
+                    'message' => $nu['nama'] . ' baru saja mendaftar.',
+                    'full_message' => "Pemberitahuan Sistem: Akun siswa baru telah terdaftar.\n\nNama: " . $nu['nama'] . "\nKelas: " . $nu['kelas'],
+                    'time' => time_ago($nu['tgl_daftar'])
                 ];
             }
         }

@@ -58,6 +58,10 @@ try {
             $db->exec("CREATE TABLE IF NOT EXISTS pengumuman (id INT AUTO_INCREMENT PRIMARY KEY, judul VARCHAR(255), isi TEXT, tgl_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
             echo "<p class='success'>✅ Migration: Created 'pengumuman' table.</p>";
         } catch (Exception $e) {}
+        try {
+            $db->exec("ALTER TABLE siswa ADD COLUMN tgl_daftar TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+            echo "<p class='success'>✅ Migration: Added 'tgl_daftar' column to siswa table.</p>";
+        } catch (Exception $e) {}
     }
 
     // 3. Sync Admin Accounts (from Localhost)

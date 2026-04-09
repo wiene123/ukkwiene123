@@ -141,4 +141,42 @@ class Aspirasi {
         $stmt->execute();
         return $stmt->fetchAll();
     }
+
+    // Get reports waiting > 24 hours
+    public function getDelayedReports($limit = 3) {
+        $sql = "SELECT ia.*, s.nama as nama_siswa, k.nama_kategori 
+                FROM input_aspirasi ia
+                JOIN aspirasi a ON ia.id_pelaporan = a.id_pelaporan
+                JOIN siswa s ON ia.nisn = s.nisn
+                JOIN kategori k ON ia.id_kategori = k.id_kategori
+                WHERE a.status = 'menunggu' 
+                AND ia.tgl_input < (NOW() - INTERVAL 1 DAY)
+                ORDER BY ia.tgl_input ASC 
+                LIMIT :limit";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // Get count of new reports today
+    public function getDailyCount() {
+        $sql = "SELECT COUNT(*) FROM input_aspirasi WHERE DATE(tgl_input) = CURDATE()";
+        return $this->db->query($sql)->fetchColumn();
+    }
+
+    // Get recent activity by any admin
+    public function getRecentAdminActivity($limit = 3) {
+        $sql = "SELECT ia.isi_aspirasi, a.status, a.tgl_feedback, k.nama_kategori 
+                FROM aspirasi a 
+                JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
+                JOIN kategori k ON ia.id_kategori = k.id_kategori
+                WHERE a.status != 'menunggu' 
+                ORDER BY a.tgl_feedback DESC 
+                LIMIT :limit";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }
