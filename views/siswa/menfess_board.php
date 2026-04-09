@@ -10,6 +10,43 @@
     </button>
 </div>
 
+<?php if(!empty($my_posts)): ?>
+    <div class="card" style="margin-bottom: 30px; border-left: 5px solid #6c5ce7;">
+        <div class="card-header" style="background: #f8fafc; cursor: pointer; display: flex; justify-content: space-between; align-items: center;" onclick="document.getElementById('my-menfess-list').classList.toggle('hidden')">
+            <h5 style="margin: 0; font-size: 0.9rem; color: #6c5ce7;"><i data-feather="user"></i> Status Kiriman Saya (<?= count($my_posts) ?>)</h5>
+            <i data-feather="chevron-down" style="width: 16px;"></i>
+        </div>
+        <div id="my-menfess-list" class="card-body hidden" style="padding: 15px;">
+            <div class="table-responsive">
+                <table class="table" style="font-size: 0.85rem; margin: 0;">
+                    <thead>
+                        <tr style="background: transparent; border-bottom: 1px solid #eee;">
+                            <th>Isi Pesan</th>
+                            <th style="text-align: center;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach($my_posts as $mp): ?>
+                            <tr>
+                                <td style="opacity: 0.8;"><?= (strlen($mp['isi']) > 60) ? h(substr($mp['isi'], 0, 60)) . '...' : h($mp['isi']) ?></td>
+                                <td style="text-align: center;">
+                                    <?php if($mp['status'] == 'approved'): ?>
+                                        <span class="badge" style="background: #d1fae5; color: #065f46; font-size: 0.7rem;">Publik</span>
+                                    <?php elseif($mp['status'] == 'pending'): ?>
+                                        <span class="badge" style="background: #fff9db; color: #92400e; font-size: 0.7rem;">Moderasi</span>
+                                    <?php else: ?>
+                                        <span class="badge" style="background: #fee2e2; color: #991b1b; font-size: 0.7rem;">Ditolak</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<?php endif; ?>
+
 <?php if(isset($_SESSION['flash'])): ?>
     <div class="alert alert-<?= $_SESSION['flash']['type'] == 'success' ? 'success' : 'danger' ?>" style="margin-bottom: 30px;">
         <?= $_SESSION['flash']['message'] ?>
@@ -98,6 +135,8 @@
 }
 @media (max-width: 992px) { .menfess-grid { column-count: 2; } }
 @media (max-width: 576px) { .menfess-grid { column-count: 1; } }
+
+.hidden { display: none; }
 
 .menfess-card {
     break-inside: avoid;

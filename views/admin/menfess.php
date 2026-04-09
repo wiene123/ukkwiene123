@@ -76,6 +76,61 @@
     </div>
 </div>
 
+<div class="card" style="margin-top: 40px;">
+    <div class="card-header" style="background: #f8fafc;">
+        <h4 class="card-title">Riwayat Moderasi (15 Terakhir)</h4>
+    </div>
+    <div class="card-body" style="padding: 0;">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="width: 150px;">Tanggal</th>
+                        <th>Isi Curhatan</th>
+                        <th style="width: 120px; text-align: center;">Status</th>
+                        <th style="width: 100px; text-align: center;">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php if(empty($history)): ?>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 30px; color: #999;">Belum ada riwayat moderasi.</td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach($history as $h): ?>
+                            <tr>
+                                <td>
+                                    <span style="font-size: 0.8rem; color: #666;">
+                                        <?= date('d/m/Y H:i', strtotime($h['tgl_input'])) ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="max-width: 400px; word-wrap: break-word; font-size: 0.85rem; opacity: 0.8;">
+                                        <?= nl2br(h($h['isi'])) ?>
+                                    </div>
+                                </td>
+                                <td style="text-align: center;">
+                                    <?php if($h['status'] == 'approved'): ?>
+                                        <span class="badge badge-success" style="background: #d1fae5; color: #065f46; border: none; padding: 5px 10px;">Approved</span>
+                                    <?php elseif($h['status'] == 'rejected'): ?>
+                                        <span class="badge badge-danger" style="background: #fee2e2; color: #991b1b; border: none; padding: 5px 10px;">Rejected</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td style="text-align: center;">
+                                    <a href="<?= base_url('index.php?page=admin_menfess_moderate&action=delete&id='.$h['id']) ?>" 
+                                       style="color: #f56565;" onclick="return confirm('Hapus dari riwayat (permanen)?')">
+                                        <i data-feather="trash-2" style="width: 16px;"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
 <style>
 .table th { background: #f8fafc; color: #64748b; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; }
 .btn-success { background: #10b981; border: none; }

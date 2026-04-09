@@ -42,6 +42,22 @@ class Menfess {
         return $stmt->fetchAll();
     }
 
+    // NEW: Get moderated history (last 20 approved or rejected)
+    public function getHistory($limit = 20) {
+        $sql = "SELECT * FROM menfess WHERE status != 'pending' ORDER BY tgl_input DESC LIMIT :limit";
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    // NEW: Get posts by NISN (to show status to student)
+    public function getUserPosts($nisn) {
+        $stmt = $this->db->prepare("SELECT * FROM menfess WHERE nisn = ? ORDER BY tgl_input DESC");
+        $stmt->execute([$nisn]);
+        return $stmt->fetchAll();
+    }
+
     // Update status
     public function updateStatus($id, $status) {
         $stmt = $this->db->prepare("UPDATE menfess SET status = ? WHERE id = ?");

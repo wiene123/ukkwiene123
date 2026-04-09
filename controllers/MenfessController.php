@@ -8,6 +8,12 @@ class MenfessController {
     public function board($menfessModel) {
         $nisn = $_SESSION['nisn'] ?? null;
         $posts = $menfessModel->getAllApproved($nisn);
+        
+        $my_posts = [];
+        if ($nisn) {
+            $my_posts = $menfessModel->getUserPosts($nisn);
+        }
+        
         require 'views/siswa/menfess_board.php';
     }
 
@@ -37,6 +43,7 @@ class MenfessController {
     // Admin moderation view
     public function admin_view($menfessModel) {
         $pending = $menfessModel->getPending();
+        $history = $menfessModel->getHistory(15); // Show last 15 actions
         require 'views/admin/menfess.php';
     }
 
