@@ -171,10 +171,11 @@ class Aspirasi {
 
     // Get recent activity by any admin
     public function getRecentAdminActivity($limit = 3) {
-        $sql = "SELECT ia.isi_aspirasi, a.status, a.tgl_feedback, k.nama_kategori 
+        $sql = "SELECT ia.isi_aspirasi, ia.is_anonymous, a.status, a.tgl_feedback, k.nama_kategori, s.nama AS nama_siswa
                 FROM aspirasi a 
                 JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori
+                JOIN siswa s ON ia.nisn = s.nisn
                 WHERE a.status != 'menunggu' 
                 ORDER BY a.tgl_feedback DESC 
                 LIMIT :limit";

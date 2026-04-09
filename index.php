@@ -275,11 +275,12 @@ switch ($page) {
             // 2. ⏰ Laporan Belum Ditanggapi > 24 Jam
             $delayed = $aspirasiModel->getDelayedReports(3);
             foreach($delayed as $d) {
+                $pelapor = $d['is_anonymous'] ? 'ANONIM' : $d['nama_siswa'];
                 $notifs[] = [
                     'type' => 'normal',
                     'title' => '⏰ Belum Ditanggapi > 24 Jam',
-                    'message' => 'Laporan ' . $d['nama_siswa'] . ' ('. $d['nama_kategori'] .') belum diproses.',
-                    'full_message' => "Peringatan: Laporan dari " . $d['nama_siswa'] . " sudah menunggu lebih dari 24 jam.\n\nKategori: " . $d['nama_kategori'],
+                    'message' => 'Laporan ' . $pelapor . ' ('. $d['nama_kategori'] .') belum diproses.',
+                    'full_message' => "Peringatan: Laporan dari " . $pelapor . " sudah menunggu lebih dari 24 jam.\n\nKategori: " . $d['nama_kategori'],
                     'time' => time_ago($d['tgl_input'])
                 ];
             }
