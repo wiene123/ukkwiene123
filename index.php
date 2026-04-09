@@ -243,8 +243,8 @@ switch ($page) {
             $recent = $aspirasiModel->getByNisn($_SESSION['nisn']);
             foreach($recent as $r) {
                 if ($r['status'] !== 'menunggu' && $r['tgl_feedback']) {
-                    $msg = 'Laporan kategori ' . $r['nama_kategori'] . ' telah diupdate menjadi ' . strtoupper($r['status']);
-                    $full = $msg . ".\n\nTanggapan/Feedback Admin:\n" . ($r['feedback'] ?? 'Tidak ada pesan feedback.');
+                    $msg = 'Laporan kategori ' . ($r['nama_kategori'] ?? 'Umum') . ' telah diupdate menjadi ' . strtoupper($r['status']);
+                    $full = $msg . ".\n\nTanggapan/Feedback Admin:\n" . ($r['feedback'] ?: 'Tidak ada pesan feedback.');
                     $notifs[] = [
                         'type' => $r['is_urgent'] ? 'urgent' : 'normal',
                         'title' => ($r['is_urgent'] ? '🚨 ' : '') . 'Tanggapan Baru',
