@@ -1,7 +1,8 @@
 <?php
 // Sidebar layout
 require_once 'views/layouts/header.php';
-$is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
+$role = $_SESSION['role'] ?? null;
+$is_admin = ($role === 'admin'); // Simplified role check
 ?>
 
 <div class="wrapper">
@@ -15,8 +16,9 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
     </div>
     <ul class="sidebar-nav">
         <?php $page = $_GET['page'] ?? 'siswa_dashboard'; ?>
+        <?php $role = $_SESSION['role'] ?? ''; ?>
         <!-- SISWA MENU -->
-        <?php if ($_SESSION['role'] == 'siswa'): ?>
+        <?php if ($role == 'siswa'): ?>
             <li class="sidebar-label">SISWA</li>
             <li class="<?= ($page == 'siswa_dashboard') ? 'active' : '' ?>">
                 <a href="<?= base_url('index.php?page=siswa_dashboard') ?>"><i data-feather="home"></i> Dashboard</a>
@@ -33,7 +35,7 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
         <?php endif; ?>
 
         <!-- ADMIN MENU -->
-        <?php if ($_SESSION['role'] == 'admin'): ?>
+        <?php if ($role == 'admin'): ?>
             <li class="sidebar-label">ADMIN</li>
             <li class="<?= ($page == 'admin_dashboard') ? 'active' : '' ?>">
                 <a href="<?= base_url('index.php?page=admin_dashboard') ?>"><i data-feather="activity"></i> Dashboard</a>
@@ -92,8 +94,13 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
             </div>
 
             <div class="user-info">
-                <span class="user-role"><?= $_SESSION['role'] == 'admin' ? 'Administrator' : 'Siswa'; ?></span>
-                <span class="user-name"><?= $_SESSION['nama'] ?? $_SESSION['username']; ?></span>
+                <?php if (isset($_SESSION['role'])): ?>
+                    <span class="user-role"><?= $_SESSION['role'] == 'admin' ? 'Administrator' : 'Siswa'; ?></span>
+                    <span class="user-name"><?= $_SESSION['nama'] ?? $_SESSION['username']; ?></span>
+                <?php else: ?>
+                    <span class="user-role">Guest</span>
+                    <span class="user-name">Not Logged In</span>
+                <?php endif; ?>
             </div>
         </div>
     </header>
