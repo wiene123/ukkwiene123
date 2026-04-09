@@ -51,6 +51,88 @@
     </div>
 </div>
 
+<!-- Charts Section -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<div class="row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 30px;">
+    <!-- Chart Status -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Laporan Berdasarkan Status</h4>
+        </div>
+        <div style="height: 300px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Chart Kategori -->
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Laporan Berdasarkan Kategori</h4>
+        </div>
+        <div style="height: 300px; display: flex; align-items: center; justify-content: center;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 1. Status Chart
+    const statusCtx = document.getElementById('statusChart').getContext('2d');
+    new Chart(statusCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Menunggu', 'Proses', 'Selesai'],
+            datasets: [{
+                data: [<?= $stats['menunggu'] ?>, <?= $stats['proses'] ?>, <?= $stats['selesai'] ?>],
+                backgroundColor: ['#FBC02D', '#1976D2', '#388E3C'],
+                borderWidth: 5,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            },
+            cutout: '70%'
+        }
+    });
+
+    // 2. Category Chart
+    const catCtx = document.getElementById('categoryChart').getContext('2d');
+    const catLabels = [<?php foreach($cat_stats as $c) echo "'".h($c['nama_kategori'])."',"; ?>];
+    const catData = [<?php foreach($cat_stats as $c) echo $c['total'].","; ?>];
+
+    new Chart(catCtx, {
+        type: 'bar',
+        data: {
+            labels: catLabels,
+            datasets: [{
+                label: 'Jumlah Laporan',
+                data: catData,
+                backgroundColor: 'rgba(140, 130, 235, 0.6)',
+                borderColor: 'var(--primary)',
+                borderWidth: 1,
+                borderRadius: 10
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { display: false } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+});
+</script>
+
 <!-- Recent Activity -->
 <div class="card">
     <div class="card-header" style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">

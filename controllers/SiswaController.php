@@ -26,6 +26,7 @@ class SiswaController {
             $nisn = $_SESSION['nisn'];
             $id_kategori = $_POST['id_kategori'];
             $isi_aspirasi = $_POST['isi_aspirasi'];
+            $is_urgent = isset($_POST['is_urgent']) ? 1 : 0;
             $foto = null;
 
             // Handle file upload (Base64 for Vercel Serverless Compatibility)
@@ -52,7 +53,7 @@ class SiswaController {
             }
 
             // Create complaint
-            if ($aspirasiModel->create($nisn, $id_kategori, $isi_aspirasi, $foto)) {
+            if ($aspirasiModel->create($nisn, $id_kategori, $isi_aspirasi, $foto, $is_urgent)) {
                 // Success
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Laporan berhasil dikirim!'];
                 header('Location: ' . base_url('index.php?page=siswa_riwayat'));

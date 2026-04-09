@@ -7,18 +7,38 @@ class AdminController {
     // Dashboard Stats
     public function dashboard($adminModel) {
         $stats = $adminModel->getStats();
+        $cat_stats = $adminModel->getCategoryStats();
         $recent_activity = $adminModel->getRecentActivity();
         require 'views/admin/dashboard.php';
     }
 
     // List all complaints with filters
-    public function aspirasi($aspirasiModel) {
+    public function aspirasi($aspirasiModel, $kategoriModel = null) {
         // Simple filter logic
         $filters = [];
-        if (isset($_GET['status'])) {
+        if (isset($_GET['status']) && $_GET['status'] !== '') {
             $filters['status'] = $_GET['status'];
         }
+        if (isset($_GET['search']) && $_GET['search'] !== '') {
+            $filters['search'] = $_GET['search'];
+        }
+        if (isset($_GET['kategori']) && $_GET['kategori'] !== '') {
+            $filters['kategori'] = $_GET['kategori'];
+        }
+        if (isset($_GET['urgent']) && $_GET['urgent'] !== '') {
+            $filters['urgent'] = $_GET['urgent'];
+        }
+
         $data = $aspirasiModel->getAll($filters);
+
+        // If AJAX request, return partial view
+        if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            require 'views/admin/_aspirasi_table.php';
+            exit;
+        }
+
+        // Needs kategori for filter dropdown
+        $kategoriList = $kategoriModel ? $kategoriModel->getAll() : [];
         require 'views/admin/aspirasi.php';
     }
 
@@ -178,6 +198,54 @@ class AdminController {
             $_SESSION['flash'] = ['type' => 'error', 'message' => 'Gagal menghapus pengguna. Mungkin telah mengirim aspirasi/laporan.'];
         }
         header('Location: ' . base_url('index.php?page=admin_users'));
+        exit;
+    }
+
+    // Export Reports
+    public function export($aspirasiModel, $type) {
+        $filters = [];
+        if (isset($_GET['status'])) $filters['status'] = $_GET['status'];
+        if (isset($_GET['kategori'])) $filters['kategori'] = $_GET['kategori'];
+        if (isset($_GET['urgent'])) $filters['urgent'] = $_GET['urgent'];
+        $data = $aspirasiModel->getAll($filters);
+
+        if ($type === 'pdf') {
+            require 'views/admin/export_pdf.php';
+        } else {
+            require 'views/admin/export_excel.php';
+        }
+        exit;
+    }
+
+    // Announcements List
+    public function pengumuman($pengumumanModel) {
+        $data = $pengumumanModel->getAll();
+        require 'views/admin/pengumuman.php';
+    }
+
+    // Store Announcement
+    public function store_pengumuman($pengumumanModel) {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $judul = $_POST['judul'];
+            $isi = $_POST['isi'];
+            if ($pengumumanModel->create($judul, $isi)) {
+                $_SESSION['flash'] = ['type' => 'success', 'message' => 'Pengumuman berhasil diterbitkan!'];
+            } else {
+                $_SESSION['flash'] = ['type' => 'error', 'message' => 'Gagal menerbitkan pengumuman.'];
+            }
+            header('Location: ' . base_url('index.php?page=admin_pengumuman'));
+            exit;
+        }
+    }
+
+    // Delete Announcement
+    public function delete_pengumuman($id, $pengumumanModel) {
+        if ($pengumumanModel->delete($id)) {
+            $_SESSION['flash'] = ['type' => 'success', 'message' => 'Pengumuman dihapus.'];
+        } else {
+            $_SESSION['flash'] = ['type' => 'error', 'message' => 'Gagal menghapus pengumuman.'];
+        }
+        header('Location: ' . base_url('index.php?page=admin_pengumuman'));
         exit;
     }
 }

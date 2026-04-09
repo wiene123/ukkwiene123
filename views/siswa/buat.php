@@ -74,6 +74,16 @@
                 });
             </script>
 
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: #fff5f5; padding: 15px; border-radius: 8px; border: 1px solid #fed7d7;">
+                    <input type="checkbox" name="is_urgent" value="1" style="width: 20px; height: 20px; accent-color: #e53e3e;">
+                    <div>
+                        <strong style="color: #e53e3e; display: block;">Tandai sebagai URGENT 🚨</strong>
+                        <span style="font-size: 0.85rem; color: #718096; font-weight: normal;">Hanya gunakan jika memerlukan penanganan segera.</span>
+                    </div>
+                </label>
+            </div>
+
             <div class="stack-mobile" style="display: flex; gap: 10px;">
                 <button type="submit" class="btn btn-primary" style="padding: 12px 25px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
                     <i data-feather="send" style="width:18px;"></i> Kirim Laporan

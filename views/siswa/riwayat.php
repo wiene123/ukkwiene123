@@ -12,15 +12,16 @@
         
         <?php if(isset($history)): ?>
             <?php foreach($history as $h): ?>
-                <div class="card" style="box-shadow: none; border: 1px solid #eee; margin-bottom: 15px;">
+                <div class="card" style="box-shadow: none; border: 1px solid #eee; margin-bottom: 15px; <?= $h['is_urgent'] ? 'border-left: 5px solid var(--danger); background: #fffcfc;' : '' ?>">
                     <div class="card-header stack-mobile" style="border-bottom: none; display: flex; justify-content: space-between; align-items: start;">
                         <div>
+                            <?php if($h['is_urgent']): ?><span class="badge" style="background: var(--danger); color: white; padding: 2px 10px; font-size: 0.7rem; margin-bottom: 8px;">🚨 URGENT</span><br><?php endif; ?>
                             <span class="badge badge-secondary" style="margin-bottom: 5px;"><?= h($h['nama_kategori']) ?></span>
                             <h5 style="margin: 0; font-size: 1rem; color: #333; line-height: 1.4;">
                                 <?= substr(h($h['isi_aspirasi']), 0, 100) . '...' ?>
                             </h5>
                             <small style="color: #999; margin-top: 5px; display: block;">
-                                <i data-feather="calendar" style="width: 12px;"></i> <?= date('d M Y, H:i', strtotime($h['tgl_input'])) ?>
+                                <i data-feather="clock" style="width: 12px;"></i> <?= time_ago($h['tgl_input']) ?>
                             </small>
                         </div>
                         <div style="text-align: right;">

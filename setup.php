@@ -45,13 +45,19 @@ try {
     } else {
         echo "<p class='info'>ℹ️ 2. Tables already exist (Skipping import).</p>";
         
-        // Ensure foto column exists (Migration)
+        // Ensure is_urgent & pengumuman exist (Migration)
         try {
             $db->exec("ALTER TABLE input_aspirasi ADD COLUMN foto LONGTEXT DEFAULT NULL");
             echo "<p class='success'>✅ Migration: Added 'foto' column to input_aspirasi.</p>";
-        } catch (Exception $e) {
-            // Ignore if column already exists
-        }
+        } catch (Exception $e) {}
+        try {
+            $db->exec("ALTER TABLE input_aspirasi ADD COLUMN is_urgent TINYINT(1) DEFAULT 0");
+            echo "<p class='success'>✅ Migration: Added 'is_urgent' column to input_aspirasi.</p>";
+        } catch (Exception $e) {}
+        try {
+            $db->exec("CREATE TABLE IF NOT EXISTS pengumuman (id INT AUTO_INCREMENT PRIMARY KEY, judul VARCHAR(255), isi TEXT, tgl_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+            echo "<p class='success'>✅ Migration: Created 'pengumuman' table.</p>";
+        } catch (Exception $e) {}
     }
 
     // 3. Sync Admin Accounts (from Localhost)

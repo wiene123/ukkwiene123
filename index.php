@@ -22,6 +22,7 @@ require_once ROOT_PATH . 'models/Admin.php';
 require_once ROOT_PATH . 'models/Siswa.php';
 require_once ROOT_PATH . 'models/Kategori.php';
 require_once ROOT_PATH . 'models/Aspirasi.php';
+require_once ROOT_PATH . 'models/Pengumuman.php';
 
 // Controllers
 require_once ROOT_PATH . 'controllers/AdminController.php';
@@ -32,6 +33,7 @@ $adminModel = new Admin();
 $siswaModel = new Siswa();
 $kategoriModel = new Kategori();
 $aspirasiModel = new Aspirasi();
+$pengumumanModel = new Pengumuman();
 
 // Instantiate Controllers
 $adminController = new AdminController();
@@ -95,7 +97,33 @@ switch ($page) {
     
     case 'admin_aspirasi':
         check_login(); check_role(['admin']);
-        $adminController->aspirasi($aspirasiModel);
+        $adminController->aspirasi($aspirasiModel, $kategoriModel);
+        break;
+
+    case 'admin_export_pdf':
+        check_login(); check_role(['admin']);
+        $adminController->export($aspirasiModel, 'pdf');
+        break;
+
+    case 'admin_export_excel':
+        check_login(); check_role(['admin']);
+        $adminController->export($aspirasiModel, 'excel');
+        break;
+
+    case 'admin_pengumuman':
+        check_login(); check_role(['admin']);
+        $adminController->pengumuman($pengumumanModel);
+        break;
+
+    case 'admin_pengumuman_store':
+        check_login(); check_role(['admin']);
+        $adminController->store_pengumuman($pengumumanModel);
+        break;
+
+    case 'admin_pengumuman_delete':
+        check_login(); check_role(['admin']);
+        $id = $_GET['id'] ?? 0;
+        $adminController->delete_pengumuman($id, $pengumumanModel);
         break;
 
     case 'admin_aspirasi_detail':
@@ -195,6 +223,49 @@ switch ($page) {
         $id = $_GET['id'] ?? 0;
         $siswaController->detail($id, $aspirasiModel);
         break;
+
+    case 'api_notif':
+        check_login();
+        $notifs = [];
+        // 1. Get Announcements
+        $latest_p = $pengumumanModel->getLatest(3);
+        foreach($latest_p as $p) {
+            $notifs[] = [
+                'type' => 'pengumuman',
+                'title' => '📢 Pengumuman: ' . $p['judul'],
+                'message' => substr($p['isi'], 0, 50) . '...',
+                'time' => time_ago($p['tgl_input'])
+            ];
+        }
+        // 2. Get Recent Responses for this student (if role is siswa)
+        if ($_SESSION['role'] === 'siswa') {
+            $recent = $aspirasiModel->getByNisn($_SESSION['nisn']);
+            foreach($recent as $r) {
+                if ($r['status'] !== 'menunggu' && $r['tgl_feedback']) {
+                    $notifs[] = [
+                        'type' => $r['is_urgent'] ? 'urgent' : 'normal',
+                        'title' => ($r['is_urgent'] ? '🚨 ' : '') . 'Tanggapan Baru',
+                        'message' => 'Laporan kategori ' . $r['nama_kategori'] . ' telah diupdate menjadi ' . strtoupper($r['status']),
+                        'time' => time_ago($r['tgl_feedback'])
+                    ];
+                }
+            }
+        } else {
+            // For admin, show urgent reports that are still waiting
+            $filters = ['status' => 'menunggu', 'urgent' => 1];
+            $urgent_waiting = $aspirasiModel->getAll($filters);
+            foreach($urgent_waiting as $u) {
+                $notifs[] = [
+                    'type' => 'urgent',
+                    'title' => '🚨 Laporan Urgent!',
+                    'message' => $u['nama_siswa'] . ' mengirim laporan urgent baru.',
+                    'time' => time_ago($u['tgl_input'])
+                ];
+            }
+        }
+        header('Content-Type: application/json');
+        echo json_encode(array_slice($notifs, 0, 10));
+        exit;
 
     default:
         echo "404 Not Found";

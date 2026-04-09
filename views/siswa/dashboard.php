@@ -68,12 +68,15 @@
                             <i data-feather="message-circle" style="width: 20px;"></i>
                         </div>
                         <div>
-                            <h5 style="margin: 0; font-size: 0.95rem; color: #334155;">Laporan kategori <span style="color: var(--primary);"><?= h($act['nama_kategori']) ?></span></h5>
+                            <h5 style="margin: 0; font-size: 0.95rem; color: #334155;">
+                                <?php if($act['is_urgent']): ?><span class="badge" style="background: var(--danger); color: white; padding: 1px 6px; font-size: 0.65rem; margin-right: 5px;">🚨 URGENT</span> <?php endif; ?>
+                                Laporan kategori <span style="color: var(--primary);"><?= h($act['nama_kategori']) ?></span>
+                            </h5>
                             <p style="margin: 3px 0 0; font-size: 0.85rem; color: #64748b; font-style: italic;">"<?= h(substr($act['isi_aspirasi'], 0, 80)) ?>..."</p>
                         </div>
                     </div>
                     <div style="text-align: right;">
-                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px;"><?= date('d M, H:i', strtotime($act['tgl_input'])) ?></div>
+                        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 5px;"><?= time_ago($act['tgl_input']) ?></div>
                         <?= get_status_badge($act['status']) ?>
                     </div>
                 </div>

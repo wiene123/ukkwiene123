@@ -15,8 +15,11 @@
                     <label style="color:#666; font-size:0.85rem;">Status Laporan:</label>
                     <div style="margin-top: 5px;">
                         <?= get_status_badge($detail['status']) ?>
+                        <?php if($detail['is_urgent']): ?>
+                            <span class="badge" style="background: var(--danger); color: white; margin-left:10px;">🚨 URGENT</span>
+                        <?php endif; ?>
                         <span style="margin-left: 10px; color: #888; font-size: 0.9rem;">
-                            Terakhir diupdate: <?= $detail['tgl_feedback'] ? date('d M Y, H:i', strtotime($detail['tgl_feedback'])) : '-' ?>
+                            Terakhir diupdate: <?= $detail['tgl_feedback'] ? time_ago($detail['tgl_feedback']) : time_ago($detail['tgl_input']) ?>
                         </span>
                     </div>
                 </div>

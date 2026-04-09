@@ -11,13 +11,13 @@ class Aspirasi {
     }
 
     // Create a new complaint
-    public function create($nisn, $id_kategori, $isi, $foto = null) {
+    public function create($nisn, $id_kategori, $isi, $foto = null, $is_urgent = 0) {
         try {
             $this->db->beginTransaction();
             
             // Step 1: Insert into input_aspirasi
-            $stmt = $this->db->prepare("INSERT INTO input_aspirasi (nisn, id_kategori, isi_aspirasi, foto) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$nisn, $id_kategori, $isi, $foto]);
+            $stmt = $this->db->prepare("INSERT INTO input_aspirasi (nisn, id_kategori, isi_aspirasi, foto, is_urgent) VALUES (?, ?, ?, ?, ?)");
+            $stmt->execute([$nisn, $id_kategori, $isi, $foto, $is_urgent]);
             $id_pelaporan = $this->db->lastInsertId();
 
             if (!$id_pelaporan) {
@@ -38,7 +38,7 @@ class Aspirasi {
 
     // Get all complaints with filters (for admin)
     public function getAll($filters = []) {
-        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.kelas
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.is_urgent, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.kelas
                 FROM aspirasi a
                 JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori
@@ -53,8 +53,20 @@ class Aspirasi {
         }
 
         // Additional filters can be added here (date, category, etc.)
-        
-        $sql .= " ORDER BY ia.tgl_input DESC";
+        if (isset($filters['search']) && $filters['search'] !== '') {
+            $sql .= " AND (ia.isi_aspirasi LIKE ? OR s.nama LIKE ?)";
+            $params[] = "%" . $filters['search'] . "%";
+            $params[] = "%" . $filters['search'] . "%";
+        }
+        if (isset($filters['kategori']) && $filters['kategori'] !== '') {
+            $sql .= " AND ia.id_kategori = ?";
+            $params[] = $filters['kategori'];
+        }
+        if (isset($filters['urgent']) && $filters['urgent'] == 1) {
+            $sql .= " AND ia.is_urgent = 1";
+        }
+
+        $sql .= " ORDER BY ia.is_urgent DESC, ia.tgl_input DESC";
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
@@ -63,12 +75,12 @@ class Aspirasi {
 
     // Get complaints by specific student (history)
     public function getByNisn($nisn) {
-        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.tgl_input, k.nama_kategori
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.is_urgent, ia.tgl_input, k.nama_kategori
                 FROM aspirasi a
                 JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori
                 WHERE ia.nisn = ?
-                ORDER BY ia.tgl_input DESC";
+                ORDER BY ia.is_urgent DESC, ia.tgl_input DESC";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([$nisn]);
         return $stmt->fetchAll();
@@ -76,7 +88,7 @@ class Aspirasi {
 
     // Get single complaint detail
     public function getById($id_aspirasi) {
-        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.nisn, s.kelas
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.is_urgent, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.nisn, s.kelas
                 FROM aspirasi a
                 JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori
@@ -116,7 +128,7 @@ class Aspirasi {
     }
     // Get recent activity for specific student
     public function getRecentActivityByNisn($nisn, $limit = 5) {
-        $sql = "SELECT a.status, ia.isi_aspirasi, ia.tgl_input, k.nama_kategori 
+        $sql = "SELECT a.status, ia.isi_aspirasi, ia.tgl_input, ia.is_urgent, k.nama_kategori 
                 FROM input_aspirasi ia
                 JOIN aspirasi a ON ia.id_pelaporan = a.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori

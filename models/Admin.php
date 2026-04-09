@@ -34,6 +34,15 @@ class Admin {
         return $stats;
     }
 
+    // Get stats per category
+    public function getCategoryStats() {
+        $sql = "SELECT k.nama_kategori, COUNT(ia.id_pelaporan) as total 
+                FROM kategori k 
+                LEFT JOIN input_aspirasi ia ON k.id_kategori = ia.id_kategori 
+                GROUP BY k.id_kategori";
+        return $this->db->query($sql)->fetchAll();
+    }
+
     // List all admins
     public function getAll() {
         $stmt = $this->db->query("SELECT * FROM admin ORDER BY username ASC");

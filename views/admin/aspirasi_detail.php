@@ -23,7 +23,10 @@
 
                 <div style="margin-bottom: 20px;">
                     <label style="color:#666; font-size:0.85rem;">Tanggal:</label>
-                    <p><?= date('d F Y, H:i', strtotime($detail['tgl_input'])) ?></p>
+                    <p><?= time_ago($detail['tgl_input']) ?> (<?= date('d F Y, H:i', strtotime($detail['tgl_input'])) ?>)</p>
+                    <?php if($detail['is_urgent']): ?>
+                        <span class="badge" style="background: var(--danger); color: white;">🚨 URGENT</span>
+                    <?php endif; ?>
                 </div>
 
                 <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; border-left: 4px solid var(--primary);">
