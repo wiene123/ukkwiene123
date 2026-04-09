@@ -172,7 +172,14 @@ document.addEventListener('DOMContentLoaded', function() {
                             <i data-feather="user" style="width: 20px;"></i>
                         </div>
                         <div>
-                            <h5 style="margin: 0; font-size: 0.95rem; color: #334155;"><?= h($act['nama_siswa']) ?> <span style="font-weight: 400; color: #64748b; font-size: 0.85rem;">mengirim laporan</span></h5>
+                            <h5 style="margin: 0; font-size: 0.95rem; color: #334155;">
+                                <?php if ($act['is_anonymous']): ?>
+                                    <span style="color: #64748b;">ANONIM</span>
+                                <?php else: ?>
+                                    <?= h($act['nama_siswa']) ?>
+                                <?php endif; ?>
+                                <span style="font-weight: 400; color: #64748b; font-size: 0.85rem;">mengirim laporan</span>
+                            </h5>
                             <p style="margin: 3px 0 0; font-size: 0.85rem; color: #64748b; font-style: italic;">"<?= h(substr($act['isi_aspirasi'], 0, 80)) ?>..."</p>
                         </div>
                     </div>

@@ -100,7 +100,7 @@ class Admin {
 
     // Get recent activity (newest complaints)
     public function getRecentActivity($limit = 5) {
-        $sql = "SELECT a.status, ia.isi_aspirasi, ia.tgl_input, s.nama as nama_siswa 
+        $sql = "SELECT a.status, ia.isi_aspirasi, ia.is_anonymous, ia.tgl_input, s.nama as nama_siswa 
                 FROM input_aspirasi ia
                 JOIN aspirasi a ON ia.id_pelaporan = a.id_pelaporan
                 JOIN siswa s ON ia.nisn = s.nisn
