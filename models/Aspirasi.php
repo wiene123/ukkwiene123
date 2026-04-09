@@ -132,11 +132,11 @@ class Aspirasi {
                 FROM input_aspirasi ia
                 JOIN aspirasi a ON ia.id_pelaporan = a.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori
-                WHERE ia.nisn = ?
+                WHERE ia.nisn = :nisn
                 ORDER BY ia.tgl_input DESC 
                 LIMIT :limit";
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(1, $nisn);
+        $stmt->bindValue(':nisn', $nisn);
         $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
