@@ -134,9 +134,11 @@ class Aspirasi {
                 JOIN kategori k ON ia.id_kategori = k.id_kategori
                 WHERE ia.nisn = ?
                 ORDER BY ia.tgl_input DESC 
-                LIMIT ?";
+                LIMIT :limit";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$nisn, $limit]);
+        $stmt->bindValue(1, $nisn);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 }

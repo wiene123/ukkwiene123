@@ -87,9 +87,10 @@ class Admin {
                 JOIN aspirasi a ON ia.id_pelaporan = a.id_pelaporan
                 JOIN siswa s ON ia.nisn = s.nisn
                 ORDER BY ia.tgl_input DESC 
-                LIMIT ?";
+                LIMIT :limit";
         $stmt = $this->db->prepare($sql);
-        $stmt->execute([$limit]);
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 }

@@ -27,8 +27,9 @@ class Pengumuman {
     }
     
     public function getLatest($limit = 5) {
-        $stmt = $this->db->prepare("SELECT * FROM pengumuman ORDER BY tgl_input DESC LIMIT ?");
-        $stmt->execute([$limit]);
+        $stmt = $this->db->prepare("SELECT * FROM pengumuman ORDER BY tgl_input DESC LIMIT :limit");
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 }
