@@ -44,6 +44,14 @@ try {
         }
     } else {
         echo "<p class='info'>ℹ️ 2. Tables already exist (Skipping import).</p>";
+        
+        // Ensure foto column exists (Migration)
+        try {
+            $db->exec("ALTER TABLE input_aspirasi ADD COLUMN foto LONGTEXT DEFAULT NULL");
+            echo "<p class='success'>✅ Migration: Added 'foto' column to input_aspirasi.</p>";
+        } catch (Exception $e) {
+            // Ignore if column already exists
+        }
     }
 
     // 3. Sync Admin Accounts (from Localhost)

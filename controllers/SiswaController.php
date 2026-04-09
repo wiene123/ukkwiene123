@@ -26,6 +26,23 @@ class SiswaController {
             $nisn = $_SESSION['nisn'];
             $id_kategori = $_POST['id_kategori'];
             $isi_aspirasi = $_POST['isi_aspirasi'];
+            $foto = null;
+
+            // Handle file upload (Base64 for Vercel Serverless Compatibility)
+            if (isset($_FILES['foto']) && $_FILES['foto']['error'] === UPLOAD_ERR_OK) {
+                $tmpName = $_FILES['foto']['tmp_name'];
+                if(is_uploaded_file($tmpName)) {
+                    $fileData = file_get_contents($tmpName);
+                    // Check if it really is an image
+                    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                    $mimeType = finfo_file($finfo, $tmpName);
+                    finfo_close($finfo);
+                    
+                    if(strpos($mimeType, 'image/') === 0) {
+                        $foto = 'data:' . $mimeType . ';base64,' . base64_encode($fileData);
+                    }
+                }
+            }
             
             // Simple validation
             if (empty($id_kategori) || empty($isi_aspirasi)) {
@@ -35,7 +52,7 @@ class SiswaController {
             }
 
             // Create complaint
-            if ($aspirasiModel->create($nisn, $id_kategori, $isi_aspirasi)) {
+            if ($aspirasiModel->create($nisn, $id_kategori, $isi_aspirasi, $foto)) {
                 // Success
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Laporan berhasil dikirim!'];
                 header('Location: ' . base_url('index.php?page=siswa_riwayat'));

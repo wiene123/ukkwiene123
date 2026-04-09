@@ -31,6 +31,13 @@
                     <p style="line-height: 1.6;"><?= nl2br(h($detail['isi_aspirasi'])) ?></p>
                 </div>
 
+                <?php if (!empty($detail['foto'])): ?>
+                <div style="margin-top: 20px;">
+                    <label style="color:#666; font-size:0.85rem; display: block; margin-bottom: 10px;">Lampiran Gambar:</label>
+                    <img src="<?= (strpos($detail['foto'], 'data:image') === 0) ? $detail['foto'] : base_url($detail['foto']) ?>" alt="Lampiran Laporan" style="max-width: 100%; border-radius: 8px; border: 1px solid #ddd; max-height: 400px; object-fit: contain;">
+                </div>
+                <?php endif; ?>
+
                 <?php if ($detail['feedback']): ?>
                 <div style="margin-top: 30px; background: #e8f5e9; padding: 20px; border-radius: 8px; border-top: 4px solid #66bb6a;">
                     <h5 style="margin-bottom: 10px; color: #2e7d32;"> <i data-feather="message-circle" style="width: 16px;"></i> Tanggapan Petugas:</h5>
