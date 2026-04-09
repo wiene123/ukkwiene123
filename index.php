@@ -332,7 +332,7 @@ switch ($page) {
 
     // --- BIMENFESS ROUTES ---
     case 'menfess':
-        check_login(); 
+        check_login(); check_role(['siswa', 'admin']);
         $menfessController->board($menfessModel);
         break;
 

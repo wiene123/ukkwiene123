@@ -68,9 +68,12 @@ if (session_status() === PHP_SESSION_NONE) {
         session_save_path('/tmp');
     }
     
+    $is_https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') || 
+                (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
+    
     session_start([
         'cookie_httponly' => true,
-        'cookie_secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on',
+        'cookie_secure'   => $is_https,
         'cookie_samesite' => 'Lax',
     ]);
 }
