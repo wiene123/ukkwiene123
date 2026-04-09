@@ -31,7 +31,11 @@ class Aspirasi {
             $this->db->commit();
             return true;
         } catch (Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
+            // Temporarily store error for display if needed
+            $_SESSION['db_error'] = $e->getMessage();
             return false;
         }
     }

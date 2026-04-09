@@ -59,7 +59,9 @@ class SiswaController {
                 $_SESSION['flash'] = ['type' => 'success', 'message' => 'Laporan berhasil dikirim!'];
                 header('Location: ' . base_url('index.php?page=siswa_riwayat'));
             } else {
-                $_SESSION['flash'] = ['type' => 'error', 'message' => 'Gagal mengirim laporan.'];
+                $err = $_SESSION['db_error'] ?? 'Gagal menyimpan ke database.';
+                $_SESSION['flash'] = ['type' => 'error', 'message' => 'Gagal mengirim laporan: ' . $err];
+                unset($_SESSION['db_error']);
                 header('Location: ' . base_url('index.php?page=siswa_kirim'));
             }
             exit;
