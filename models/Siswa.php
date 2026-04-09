@@ -10,6 +10,35 @@ class Siswa {
         $this->db = $db;
     }
 
+    // Login for Siswa
+    public function login($nisn, $password) {
+        $stmt = $this->db->prepare("SELECT * FROM siswa WHERE nisn = ?");
+        $stmt->execute([$nisn]);
+        $user = $stmt->fetch();
+
+        if ($user && $user['password'] === md5($password)) {
+            return $user;
+        }
+        return false;
+    }
+
+    // Register for Siswa
+    public function register($nisn, $nama, $kelas, $password) {
+        try {
+            $stmt = $this->db->prepare("INSERT INTO siswa (nisn, nama, kelas, password) VALUES (?, ?, ?, ?)");
+            return $stmt->execute([$nisn, $nama, $kelas, md5($password)]);
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+
+    // Get single siswa by NISN
+    public function getByNisn($nisn) {
+        $stmt = $this->db->prepare("SELECT * FROM siswa WHERE nisn = ?");
+        $stmt->execute([$nisn]);
+        return $stmt->fetch();
+    }
+
     // Get new registrations in the last 24 hours
     public function getNewRegistrations($limit = 3) {
         $sql = "SELECT * FROM siswa 
