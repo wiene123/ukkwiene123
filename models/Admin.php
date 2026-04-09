@@ -43,6 +43,24 @@ class Admin {
         return $this->db->query($sql)->fetchAll();
     }
 
+    // Get advanced performance metrics
+    public function getPerformanceMetrics() {
+        $metrics = [];
+        
+        // Completion Rate
+        $total = $this->db->query("SELECT COUNT(*) FROM aspirasi")->fetchColumn();
+        $selesai = $this->db->query("SELECT COUNT(*) FROM aspirasi WHERE status='selesai'")->fetchColumn();
+        $metrics['completion_rate'] = $total > 0 ? round(($selesai / $total) * 100, 1) : 0;
+        
+        // Urgent Waiting
+        $metrics['urgent_waiting'] = $this->db->query("SELECT COUNT(*) FROM input_aspirasi ia JOIN aspirasi a ON ia.id_pelaporan = a.id_pelaporan WHERE ia.is_urgent=1 AND a.status='menunggu'")->fetchColumn();
+        
+        // Avg Response Time (Dummy logic or simplified for UKK)
+        $metrics['avg_response'] = " < 24 Jam";
+        
+        return $metrics;
+    }
+
     // List all admins
     public function getAll() {
         $stmt = $this->db->query("SELECT * FROM admin ORDER BY username ASC");

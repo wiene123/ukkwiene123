@@ -8,6 +8,7 @@ class AdminController {
     public function dashboard($adminModel) {
         $stats = $adminModel->getStats();
         $cat_stats = $adminModel->getCategoryStats();
+        $metrics = $adminModel->getPerformanceMetrics();
         $recent_activity = $adminModel->getRecentActivity();
         require 'views/admin/dashboard.php';
     }

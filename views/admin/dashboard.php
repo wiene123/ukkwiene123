@@ -51,6 +51,29 @@
     </div>
 </div>
 
+<!-- Premium Metrics -->
+<div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+    <div class="card" style="background: linear-gradient(135deg, #8c82eb 0%, #6e64d2 100%); color: white; border: none; overflow: hidden; position: relative;">
+        <div style="z-index: 1; position: relative;">
+            <p style="margin: 0; opacity: 0.8; font-size: 0.9rem;">Tingkat Penyelesaian Laporan</p>
+            <h3 style="margin: 10px 0; font-size: 2.5rem; font-weight: 800;"><?= $metrics['completion_rate'] ?>%</h3>
+            <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.2); border-radius: 10px; margin-top: 15px;">
+                <div style="width: <?= $metrics['completion_rate'] ?>%; height: 100%; background: white; border-radius: 10px; box-shadow: 0 0 10px rgba(255,255,255,0.5);"></div>
+            </div>
+        </div>
+        <i data-feather="trending-up" style="position: absolute; right: -20px; bottom: -20px; width: 120px; height: 120px; opacity: 0.1;"></i>
+    </div>
+
+    <div class="card" style="background: linear-gradient(135deg, #ff7675 0%, #d63031 100%); color: white; border: none; overflow: hidden; position: relative;">
+        <div style="z-index: 1; position: relative;">
+            <p style="margin: 0; opacity: 0.8; font-size: 0.9rem;">Aspirasi Urgent Aktif</p>
+            <h3 style="margin: 10px 0; font-size: 2.5rem; font-weight: 800;"><?= $metrics['urgent_waiting'] ?> <small style="font-size: 1rem; font-weight: 400;">Butuh Respon</small></h3>
+            <p style="margin: 0; font-size: 0.85rem; background: rgba(0,0,0,0.1); padding: 5px 12px; border-radius: 20px; display: inline-block;">Target Respon: <?= $metrics['avg_response'] ?></p>
+        </div>
+        <i data-feather="alert-circle" style="position: absolute; right: -20px; bottom: -20px; width: 120px; height: 120px; opacity: 0.1;"></i>
+    </div>
+</div>
+
 <!-- Charts Section -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <div class="row" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px; margin-bottom: 30px;">

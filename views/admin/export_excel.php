@@ -7,7 +7,28 @@ header("Content-Disposition: attachment; filename=\"$filename\"");
 
 $output = fopen("php://output", "w");
 
-// Header Column
+// --- Header Summary Section ---
+fputcsv($output, ['SMK TERPADU BINA INSAN']);
+fputcsv($output, ['LAPORAN REKAPITULASI ASPIRASI']);
+fputcsv($output, ['Dicetak Tanggal:', date('d/m/Y H:i')]);
+fputcsv($output, []); // Spacer row
+
+// Statistics Recap
+$total = count($data);
+$urgent = 0;
+$selesai = 0;
+foreach($data as $r) {
+    if($r['is_urgent']) $urgent++;
+    if($r['status'] == 'selesai') $selesai++;
+}
+
+fputcsv($output, ['RINGKASAN DATA']);
+fputcsv($output, ['Total Laporan', $total]);
+fputcsv($output, ['Laporan Urgent', $urgent]);
+fputcsv($output, ['Laporan Selesai', $selesai]);
+fputcsv($output, []); // Spacer row
+
+// --- Detailed Data Table ---
 fputcsv($output, ['No', 'Tanggal', 'Nama Pelapor', 'Kelas', 'Kategori', 'Isi Laporan', 'Urgent', 'Status', 'Feedback', 'Tgl Ditanggapi']);
 
 foreach ($data as $index => $row) {

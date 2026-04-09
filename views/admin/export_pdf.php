@@ -18,10 +18,18 @@
     </style>
 </head>
 <body onload="window.print()">
-    <div class="header">
-        <div class="logo">SIPESKU - Sistem Pengaduan Sekolah</div>
-        <p>Laporan Rekapitulasi Aspirasi & Pengaduan Siswa</p>
-        <p style="font-size: 14px; color: #666;">Dicetak pada: <?= date('d F Y, H:i') ?></p>
+    <!-- Kop Surat -->
+    <div style="display: flex; align-items: center; border-bottom: 3px double #333; padding-bottom: 20px; margin-bottom: 30px;">
+        <div style="flex: 1; text-align: center;">
+            <h2 style="margin: 0; font-size: 1.6rem; text-transform: uppercase; color: #000;">SMK TERPADU BINA INSAN</h2>
+            <p style="margin: 5px 0; font-size: 0.9rem; color: #555;">Jl. Pendidikan No. 123, Kota Pendidikan - Jawa Barat</p>
+            <p style="margin: 0; font-size: 0.85rem; color: #777;">Email: info@smkterpadubinaisnan.sch.id | Telp: (021) 1234567</p>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-bottom: 30px;">
+        <h3 style="margin: 0; text-decoration: underline; text-transform: uppercase;">LAPORAN REKAPITULASI ASPIRASI SISWA</h3>
+        <p style="margin: 5px 0; font-size: 0.9rem; color: #666;">Periode Cetak: <?= date('d F Y, H:i') ?></p>
     </div>
 
     <table>
@@ -50,6 +58,15 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+
+    <!-- Tanda Tangan -->
+    <div style="margin-top: 60px; display: flex; justify-content: flex-end;">
+        <div style="text-align: center; width: 250px;">
+            <p style="margin-bottom: 80px;">Dicetak Oleh Admin,<br><br>Tanggal: <?= date('d/m/Y') ?></p>
+            <p style="font-weight: bold; text-decoration: underline;">( ........................................... )</p>
+            <p style="font-size: 0.85rem; color: #777;">NIP/Username: <?= h($_SESSION['username']) ?></p>
+        </div>
+    </div>
 
     <div class="no-print" style="margin-top: 50px; text-align: center;">
         <button onclick="window.print()" style="padding: 10px 20px; cursor: pointer;">Cetak Laporan</button>
