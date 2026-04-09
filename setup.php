@@ -9,6 +9,14 @@ echo "<h1>🚀 UKK SIPESKU Auto-Setup</h1>";
 echo "<p>Environment: <b>" . (env('MYSQLHOST') ? 'Cloud (Vercel/Aiven)' : 'Localhost') . "</b></p>";
 echo "<p>Host: <b>" . DB_HOST . "</b></p>";
 
+// Helper to check if column exists
+function columnExists($db, $table, $column) {
+    try {
+        $stmt = $db->query("SHOW COLUMNS FROM `$table` LIKE '$column'");
+        return $stmt->fetch() !== false;
+    } catch (Exception $e) { return false; }
+}
+
 try {
     // Note: $db is already instantiated in config/database.php
     echo "<p class='success'>✅ 1. Connected to Database Server.</p>";
@@ -45,27 +53,45 @@ try {
     } else {
         echo "<p class='info'>ℹ️ 2. Tables already exist (Skipping import).</p>";
         
-        // Ensure is_urgent & pengumuman exist (Migration)
-        try {
-            $db->exec("ALTER TABLE input_aspirasi ADD COLUMN foto LONGTEXT DEFAULT NULL");
-            echo "<p class='success'>✅ Migration: Added 'foto' column to input_aspirasi.</p>";
-        } catch (Exception $e) {}
-        try {
-            $db->exec("ALTER TABLE input_aspirasi ADD COLUMN is_urgent TINYINT(1) DEFAULT 0");
-            echo "<p class='success'>✅ Migration: Added 'is_urgent' column to input_aspirasi.</p>";
-        } catch (Exception $e) {}
-        try {
-            $db->exec("ALTER TABLE input_aspirasi ADD COLUMN is_anonymous TINYINT(1) DEFAULT 0");
-            echo "<p class='success'>✅ Migration: Added 'is_anonymous' column to input_aspirasi.</p>";
-        } catch (Exception $e) {}
-        try {
-            $db->exec("CREATE TABLE IF NOT EXISTS pengumuman (id INT AUTO_INCREMENT PRIMARY KEY, judul VARCHAR(255), isi TEXT, tgl_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
-            echo "<p class='success'>✅ Migration: Created 'pengumuman' table.</p>";
-        } catch (Exception $e) {}
-        try {
-            $db->exec("ALTER TABLE siswa ADD COLUMN tgl_daftar TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
-            echo "<p class='success'>✅ Migration: Added 'tgl_daftar' column to siswa table.</p>";
-        } catch (Exception $e) {}
+        // 1. Column migrations for input_aspirasi
+        $cols = [
+            'foto' => "ALTER TABLE input_aspirasi ADD COLUMN foto LONGTEXT DEFAULT NULL",
+            'is_urgent' => "ALTER TABLE input_aspirasi ADD COLUMN is_urgent TINYINT(1) DEFAULT 0",
+            'is_anonymous' => "ALTER TABLE input_aspirasi ADD COLUMN is_anonymous TINYINT(1) DEFAULT 0"
+        ];
+        foreach($cols as $col => $sql) {
+            if (!columnExists($db, 'input_aspirasi', $col)) {
+                try {
+                    $db->exec($sql);
+                    echo "<p class='success'>✅ Migration: Added '$col' column to input_aspirasi.</p>";
+                } catch (Exception $e) {
+                    echo "<p class='error'>❌ Migration failed for '$col': " . $e->getMessage() . "</p>";
+                }
+            } else {
+                echo "<p class='info'>ℹ️ Column '$col' already exists.</p>";
+            }
+        }
+
+        // 2. Migration for pengumuman table
+        $stmt = $db->query("SHOW TABLES LIKE 'pengumuman'");
+        if (!$stmt->fetchColumn()) {
+            try {
+                $db->exec("CREATE TABLE pengumuman (id INT AUTO_INCREMENT PRIMARY KEY, judul VARCHAR(255), isi TEXT, tgl_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
+                echo "<p class='success'>✅ Migration: Created 'pengumuman' table.</p>";
+            } catch (Exception $e) { echo "<p class='error'>❌ Create table pengumuman failed: " . $e->getMessage() . "</p>"; }
+        } else {
+            echo "<p class='info'>ℹ️ Table 'pengumuman' already exists.</p>";
+        }
+
+        // 3. Migration for siswa table (tgl_daftar)
+        if (!columnExists($db, 'siswa', 'tgl_daftar')) {
+            try {
+                $db->exec("ALTER TABLE siswa ADD COLUMN tgl_daftar TIMESTAMP DEFAULT CURRENT_TIMESTAMP");
+                echo "<p class='success'>✅ Migration: Added 'tgl_daftar' column to siswa.</p>";
+            } catch (Exception $e) { echo "<p class='error'>❌ Migration failed for 'tgl_daftar': " . $e->getMessage() . "</p>"; }
+        } else {
+            echo "<p class='info'>ℹ️ Column 'tgl_daftar' already exists.</p>";
+        }
     }
 
     // 3. Sync Admin Accounts (from Localhost)
