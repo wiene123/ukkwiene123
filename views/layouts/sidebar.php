@@ -71,8 +71,8 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
                 <!-- Notif Dropdown -->
                 <div id="notif-dropdown" class="card" style="position: absolute; top: 60px; right: 0; width: 320px; z-index: 1000; padding: 0; display: none; animation: slideIn 0.3s ease; border: 1px solid #eee; overflow: hidden;">
                     <div style="padding: 15px 20px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; background: #fafafa;">
-                        <h5 style="margin:0; font-size: 0.9rem;">Notifikasi</h5>
-                        <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700;">Tandai baca</span>
+                    <h5 style="margin:0; font-size: 0.9rem;">Notifikasi</h5>
+                        <span id="mark-read" style="font-size: 0.75rem; color: var(--primary); font-weight: 700; cursor: pointer;">Tandai baca</span>
                     </div>
                     <div id="notif-list" style="max-height: 400px; overflow-y: auto;">
                         <div style="padding: 30px; text-align: center; color: #999; font-size: 0.85rem;">
@@ -107,6 +107,10 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
         bell.addEventListener('click', function(e) {
             e.stopPropagation();
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.getElementById('mark-read').addEventListener('click', function() {
+            document.getElementById('notif-badge').style.display = 'none';
         });
 
         document.addEventListener('click', function() {
