@@ -13,7 +13,13 @@
             <div class="card-body">
                 <div style="margin-bottom: 20px;">
                     <label style="color:#666; font-size:0.85rem;">Pelapor:</label>
-                    <h5 style="font-size:1.1rem;"><?= h($detail['nama_siswa']) ?> <span class="badge badge-secondary"><?= h($detail['kelas']) ?></span></h5>
+                    <h5 style="font-size:1.1rem;">
+                        <?php if ($detail['is_anonymous']): ?>
+                            <span style="color: #666;">👤 ANONIM</span>
+                        <?php else: ?>
+                            <?= h($detail['nama_siswa']) ?> <span class="badge badge-secondary"><?= h($detail['kelas']) ?></span>
+                        <?php endif; ?>
+                    </h5>
                 </div>
                 
                 <div style="margin-bottom: 20px;">

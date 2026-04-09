@@ -49,7 +49,13 @@
             <tr>
                 <td><?= $index + 1 ?></td>
                 <td><?= date('d/m/Y H:i', strtotime($row['tgl_input'])) ?></td>
-                <td><?= $row['nama_siswa'] ?> (<?= $row['kelas'] ?>)</td>
+                <td>
+                    <?php if ($row['is_anonymous']): ?>
+                        ANONIM
+                    <?php else: ?>
+                        <?= $row['nama_siswa'] ?> (<?= $row['kelas'] ?>)
+                    <?php endif; ?>
+                </td>
                 <td><?= $row['nama_kategori'] ?></td>
                 <td><?= $row['isi_aspirasi'] ?></td>
                 <td><?= $row['is_urgent'] ? 'YA' : 'TIDAK' ?></td>

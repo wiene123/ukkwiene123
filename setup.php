@@ -55,6 +55,10 @@ try {
             echo "<p class='success'>✅ Migration: Added 'is_urgent' column to input_aspirasi.</p>";
         } catch (Exception $e) {}
         try {
+            $db->exec("ALTER TABLE input_aspirasi ADD COLUMN is_anonymous TINYINT(1) DEFAULT 0");
+            echo "<p class='success'>✅ Migration: Added 'is_anonymous' column to input_aspirasi.</p>";
+        } catch (Exception $e) {}
+        try {
             $db->exec("CREATE TABLE IF NOT EXISTS pengumuman (id INT AUTO_INCREMENT PRIMARY KEY, judul VARCHAR(255), isi TEXT, tgl_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP)");
             echo "<p class='success'>✅ Migration: Created 'pengumuman' table.</p>";
         } catch (Exception $e) {}

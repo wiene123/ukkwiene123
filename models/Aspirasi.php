@@ -11,13 +11,13 @@ class Aspirasi {
     }
 
     // Create a new complaint
-    public function create($nisn, $id_kategori, $isi, $foto = null, $is_urgent = 0) {
+    public function create($nisn, $id_kategori, $isi, $foto = null, $is_urgent = 0, $is_anonymous = 0) {
         try {
             $this->db->beginTransaction();
             
             // Step 1: Insert into input_aspirasi
-            $stmt = $this->db->prepare("INSERT INTO input_aspirasi (nisn, id_kategori, isi_aspirasi, foto, is_urgent) VALUES (?, ?, ?, ?, ?)");
-            $stmt->execute([$nisn, $id_kategori, $isi, $foto, $is_urgent]);
+            $stmt = $this->db->prepare("INSERT INTO input_aspirasi (nisn, id_kategori, isi_aspirasi, foto, is_urgent, is_anonymous) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$nisn, $id_kategori, $isi, $foto, $is_urgent, $is_anonymous]);
             $id_pelaporan = $this->db->lastInsertId();
 
             if (!$id_pelaporan) {
@@ -38,7 +38,7 @@ class Aspirasi {
 
     // Get all complaints with filters (for admin)
     public function getAll($filters = []) {
-        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.is_urgent, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.kelas
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.is_urgent, ia.is_anonymous, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.kelas
                 FROM aspirasi a
                 JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori
@@ -88,7 +88,7 @@ class Aspirasi {
 
     // Get single complaint detail
     public function getById($id_aspirasi) {
-        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.is_urgent, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.nisn, s.kelas
+        $sql = "SELECT a.*, ia.isi_aspirasi, ia.foto, ia.is_urgent, ia.is_anonymous, ia.tgl_input, k.nama_kategori, s.nama AS nama_siswa, s.nisn, s.kelas
                 FROM aspirasi a
                 JOIN input_aspirasi ia ON a.id_pelaporan = ia.id_pelaporan
                 JOIN kategori k ON ia.id_kategori = k.id_kategori

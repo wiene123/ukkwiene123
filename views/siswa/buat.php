@@ -84,6 +84,16 @@
                 </label>
             </div>
 
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; background: #f0f4ff; padding: 15px; border-radius: 8px; border: 1px solid #d1d9ff;">
+                    <input type="checkbox" name="is_anonymous" value="1" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                    <div>
+                        <strong style="color: var(--primary); display: block;">Kirim sebagai ANONIM 👤</strong>
+                        <span style="font-size: 0.85rem; color: #718096; font-weight: normal;">Identitas Nama & Kelas Anda akan disembunyikan dari pihak sekolah/admin.</span>
+                    </div>
+                </label>
+            </div>
+
             <div class="stack-mobile" style="display: flex; gap: 10px;">
                 <button type="submit" class="btn btn-primary" style="padding: 12px 25px; border-radius: 8px; display: flex; align-items: center; gap: 8px;">
                     <i data-feather="send" style="width:18px;"></i> Kirim Laporan

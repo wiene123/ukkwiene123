@@ -33,8 +33,8 @@ foreach ($data as $index => $row) {
     fputcsv($output, [
         $index + 1,
         date('Y-m-d H:i', strtotime($row['tgl_input'])),
-        $row['nama_siswa'],
-        $row['kelas'],
+        $row['is_anonymous'] ? 'ANONIM' : $row['nama_siswa'],
+        $row['is_anonymous'] ? '-' : $row['kelas'],
         $row['nama_kategori'],
         str_replace(["\r", "\n", ","], " ", $row['isi_aspirasi']),
         $row['is_urgent'] ? 'YA' : 'TIDAK',

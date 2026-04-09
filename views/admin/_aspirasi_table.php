@@ -3,8 +3,13 @@
     <tr style="<?= $row['is_urgent'] ? 'border-left: 4px solid #ff7675; background: #fff8f8;' : '' ?>">
         <td><?= $index + 1 ?></td>
         <td>
-            <b><?= h($row['nama_siswa']) ?></b><br>
-            <span style="font-size:0.8rem; color:#888;"><?= h($row['kelas']) ?></span>
+            <?php if ($row['is_anonymous']): ?>
+                <b style="color: #666;">ANONIM</b><br>
+                <span style="font-size:0.8rem; color:#ccc;">Identitas Disembunyikan</span>
+            <?php else: ?>
+                <b><?= h($row['nama_siswa']) ?></b><br>
+                <span style="font-size:0.8rem; color:#888;"><?= h($row['kelas']) ?></span>
+            <?php endif; ?>
         </td>
         <td><?= h($row['nama_kategori']) ?></td>
         <td>
