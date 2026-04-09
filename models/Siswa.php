@@ -39,6 +39,28 @@ class Siswa {
         return $stmt->fetch();
     }
 
+    // Get all siswa
+    public function getAll() {
+        return $this->db->query("SELECT * FROM siswa ORDER BY nama ASC")->fetchAll();
+    }
+
+    // Update siswa
+    public function update($nisn, $nama, $kelas, $password = null) {
+        if ($password) {
+            $stmt = $this->db->prepare("UPDATE siswa SET nama = ?, kelas = ?, password = ? WHERE nisn = ?");
+            return $stmt->execute([$nama, $kelas, md5($password), $nisn]);
+        } else {
+            $stmt = $this->db->prepare("UPDATE siswa SET nama = ?, kelas = ? WHERE nisn = ?");
+            return $stmt->execute([$nama, $kelas, $nisn]);
+        }
+    }
+
+    // Delete siswa
+    public function delete($nisn) {
+        $stmt = $this->db->prepare("DELETE FROM siswa WHERE nisn = ?");
+        return $stmt->execute([$nisn]);
+    }
+
     // Get new registrations in the last 24 hours
     public function getNewRegistrations($limit = 3) {
         $sql = "SELECT * FROM siswa 
