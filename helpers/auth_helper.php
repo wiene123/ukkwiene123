@@ -42,30 +42,36 @@ function h($string) {
 
 // Time Ago Helper
 function time_ago($datetime, $full = false) {
+    if (!$datetime) return "-";
     $now = new DateTime;
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
 
-    $diff->w = floor($diff->d / 7);
-    $diff->d -= $diff->w * 7;
+    $weeks = floor($diff->d / 7);
+    $days = $diff->d - ($weeks * 7);
 
     $string = array(
         'y' => 'tahun',
         'm' => 'bulan',
-        'w' => 'minggu',
         'd' => 'hari',
         'h' => 'jam',
         'i' => 'menit',
         's' => 'detik',
     );
-    foreach ($string as $k => &$v) {
+    
+    // Custom handling for weeks since it's not a native property
+    if ($weeks > 0) {
+        $string_output['w'] = $weeks . ' minggu';
+    }
+
+    foreach ($string as $k => $v) {
         if ($diff->$k) {
-            $v = $diff->$k . ' ' . $v;
-        } else {
-            unset($string[$k]);
+            $string_output[$k] = $diff->$k . ' ' . $v;
         }
     }
 
-    if (!$full) $string = array_slice($string, 0, 1);
-    return $string ? implode(', ', $string) . ' lalu' : 'Baru saja';
+    if (!isset($string_output)) return "Baru saja";
+
+    if (!$full) $string_output = array_slice($string_output, 0, 1);
+    return implode(', ', $string_output) . ' lalu';
 }

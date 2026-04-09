@@ -263,6 +263,7 @@ switch ($page) {
                 ];
             }
         }
+        if (ob_get_length()) ob_clean();
         header('Content-Type: application/json');
         echo json_encode(array_slice($notifs, 0, 10));
         exit;
