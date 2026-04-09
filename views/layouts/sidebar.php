@@ -27,6 +27,9 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
             <li class="<?= ($page == 'riwayat' || $page == 'siswa_riwayat' || $page == 'siswa_detail') ? 'active' : '' ?>">
                 <a href="<?= base_url('index.php?page=riwayat') ?>"><i data-feather="clock"></i> Riwayat</a>
             </li>
+            <li class="<?= ($page == 'menfess') ? 'active' : '' ?>">
+                <a href="<?= base_url('index.php?page=menfess') ?>"><i data-feather="heart"></i> Bimenfess</a>
+            </li>
         <?php endif; ?>
 
         <!-- ADMIN MENU -->
@@ -46,6 +49,9 @@ $is_admin = ($_SESSION['role'] === 'admin'); // Simplified role check
             </li>
             <li class="<?= ($page == 'admin_pengumuman') ? 'active' : '' ?>">
                 <a href="<?= base_url('index.php?page=admin_pengumuman') ?>"><i data-feather="bell"></i> Pengumuman</a>
+            </li>
+            <li class="<?= ($page == 'admin_menfess') ? 'active' : '' ?>">
+                <a href="<?= base_url('index.php?page=admin_menfess') ?>"><i data-feather="heart"></i> Moderasi Bimenfess</a>
             </li>
         <?php endif; ?>
 

@@ -23,10 +23,12 @@ require_once ROOT_PATH . 'models/Siswa.php';
 require_once ROOT_PATH . 'models/Kategori.php';
 require_once ROOT_PATH . 'models/Aspirasi.php';
 require_once ROOT_PATH . 'models/Pengumuman.php';
+require_once ROOT_PATH . 'models/Menfess.php';
 
 // Controllers
 require_once ROOT_PATH . 'controllers/AdminController.php';
 require_once ROOT_PATH . 'controllers/SiswaController.php';
+require_once ROOT_PATH . 'controllers/MenfessController.php';
 
 // Instantiate Models
 $adminModel = new Admin();
@@ -34,10 +36,12 @@ $siswaModel = new Siswa();
 $kategoriModel = new Kategori();
 $aspirasiModel = new Aspirasi();
 $pengumumanModel = new Pengumuman();
+$menfessModel = new Menfess();
 
 // Instantiate Controllers
 $adminController = new AdminController();
 $siswaController = new SiswaController();
+$menfessController = new MenfessController();
 
 // Routing
 $page = $_GET['page'] ?? 'login';
@@ -325,6 +329,36 @@ switch ($page) {
         header('Content-Type: application/json');
         echo json_encode(array_slice($notifs, 0, 10));
         exit;
+
+    // --- BIMENFESS ROUTES ---
+    case 'menfess':
+        check_login(); 
+        $menfessController->board($menfessModel);
+        break;
+
+    case 'menfess_store':
+        check_login(); check_role(['siswa']);
+        $menfessController->store($menfessModel);
+        break;
+
+    case 'menfess_like':
+        check_login(); 
+        $menfessController->like($menfessModel);
+        break;
+
+    case 'admin_menfess':
+        check_login(); check_role(['admin']);
+        $menfessController->admin_view($menfessModel);
+        break;
+
+    case 'admin_menfess_moderate':
+        check_login(); check_role(['admin']);
+        $menfessController->moderate($menfessModel);
+        break;
+
+    case 'unauthorized':
+        require 'views/unauthorized.php';
+        break;
 
     default:
         echo "404 Not Found";

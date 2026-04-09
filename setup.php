@@ -92,6 +92,39 @@ try {
         } else {
             echo "<p class='info'>ℹ️ Column 'tgl_daftar' already exists.</p>";
         }
+
+        // 4. Bimenfess Tables
+        $stmt = $db->query("SHOW TABLES LIKE 'menfess'");
+        if (!$stmt->fetchColumn()) {
+            try {
+                $db->exec("CREATE TABLE menfess (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    isi TEXT NOT NULL,
+                    warna VARCHAR(20) DEFAULT '#ffffff',
+                    status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+                    nisn CHAR(10),
+                    tgl_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )");
+                echo "<p class='success'>✅ Migration: Created 'menfess' table.</p>";
+            } catch (Exception $e) { echo "<p class='error'>❌ Create table menfess failed: " . $e->getMessage() . "</p>"; }
+        } else {
+            echo "<p class='info'>ℹ️ Table 'menfess' already exists.</p>";
+        }
+
+        $stmt = $db->query("SHOW TABLES LIKE 'menfess_likes'");
+        if (!$stmt->fetchColumn()) {
+            try {
+                $db->exec("CREATE TABLE menfess_likes (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    id_menfess INT,
+                    nisn CHAR(10),
+                    UNIQUE KEY (id_menfess, nisn)
+                )");
+                echo "<p class='success'>✅ Migration: Created 'menfess_likes' table.</p>";
+            } catch (Exception $e) { echo "<p class='error'>❌ Create table menfess_likes failed: " . $e->getMessage() . "</p>"; }
+        } else {
+            echo "<p class='info'>ℹ️ Table 'menfess_likes' already exists.</p>";
+        }
     }
 
     // 3. Sync Admin Accounts (from Localhost)
